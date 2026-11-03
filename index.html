@@ -27,8 +27,12 @@
   @keyframes pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
   .thanks h1.done-title{font-size:32px;margin:0 0 6px}
   .done-sub{font-size:17px;font-weight:500;text-align:center;margin:0 0 14px;text-wrap:balance}
-  .contact{font-size:16px}
-  .hours{font-size:13px;color:var(--muted)}
+  .nextbox{display:flex;gap:12px;align-items:flex-start;background:#f3f1ee;border-radius:14px;padding:14px 16px;margin:0 0 18px;text-align:right}
+  .nb-ico{flex:none;width:36px;height:36px;border-radius:50%;background:#fff;color:var(--red,#C8102E);display:flex;align-items:center;justify-content:center}
+  .nb-h{font-weight:700;font-size:15px;margin-bottom:2px}
+  .nextbox .contact{font-size:15px;margin:0 0 4px;text-align:right!important}
+  .nextbox .hours{font-size:13px;color:var(--muted);margin:0;text-align:right!important;text-wrap:wrap}
+  .nextbox .contact{text-wrap:pretty}
   .quizcta{margin-top:22px;border:1px solid var(--line);background:#fff;border-radius:16px;padding:18px}
   .quizcta h2{font-size:19px;line-height:1.5}
   /* centered text blocks; options, inputs and the journey list stay right-aligned */
@@ -116,9 +120,15 @@
   <section class="slide hidden thanks" data-s="thanks">
     <div class="done-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="38" height="38"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <h1 class="done-title">شكراً لكم!</h1>
-    <p class="done-sub" id="doneSub">تم تسجيل البطل بنجاح، وسعيدين إنكم اخترتوا انفكتوس فايتر يكون جزء من رحلة البطل.</p>
-    <p class="contact" id="contactMsg"></p>
-    <p class="hours">أوقات دوامنا من الساعة 2:30 العصر إلى 9:30 مساءً، ما عدا الجمعة.</p>
+    <p class="done-sub" id="doneSub">تم تسجيل البطل بنجاح</p>
+    <div class="nextbox">
+      <div class="nb-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.6a1 1 0 01-.25 1z" fill="currentColor"/></svg></div>
+      <div class="nb-txt">
+        <div class="nb-h">الخطوة الجاية</div>
+        <p class="contact" id="contactMsg"></p>
+        <p class="hours">دوامنا من 2:30 العصر إلى 9:30 مساءً، ما عدا الجمعة.</p>
+      </div>
+    </div>
     <div class="quizcta">
       <span class="by">اختياري ومجاني</span>
       <h2 id="quizTitle">اكتشف شخصية بطلك في 4 دقائق</h2>
@@ -229,7 +239,7 @@ $("#submit").onclick=async()=>{
   try{ trackLead(data.phone); }catch(e){}
   $("#contactMsg").textContent=contactMessage();
   $("#quizTitle").textContent=`اكتشف شخصية ${data.childName} في 4 دقائق`;
-  $("#doneSub").textContent=`تم تسجيل ${data.childName} بنجاح، وسعيدين إنكم اخترتوا انفكتوس فايتر يكون جزء من رحلة البطل.`;
+  $("#doneSub").textContent=`تم تسجيل ${data.childName} بنجاح`;
   $("#quizBtn").href = res.demo
     ? "/quiz/?t=demo&go=1&n="+encodeURIComponent(data.childName)+"&a="+data.age
     : "/quiz/?go=1&t="+encodeURIComponent(res.token);
