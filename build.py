@@ -16,7 +16,7 @@ PAGES = {
     # output folder: settings
     "":       {"source": "زيارة مباشرة", "snap": "", "meta": "", "gtag": ""},
     "snap":   {"source": "سناب شات",     "snap": "797ebb8b-3a15-4855-b7ec-c7c8de54ca33", "meta": "", "gtag": ""},
-    "insta":  {"source": "انستجرام",     "snap": "", "meta": "", "gtag": ""},
+    "insta":  {"source": "انستجرام",     "snap": "", "meta": "35804869259157049", "gtag": ""},
     "google": {"source": "Google Ads",   "snap": "", "meta": "", "gtag": "AW-10864651559/4ZkxCNvts6AYEKfa1bwo"},
 }
 
