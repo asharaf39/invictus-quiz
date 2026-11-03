@@ -23,7 +23,10 @@
   label.f{display:block;font-weight:600;font-size:15px;margin:18px 0 6px}
   label.f small{display:block;font-weight:400;color:var(--muted);font-size:13.5px}
   .soon{font-size:13.5px;color:var(--muted);margin:-2px 0 10px}
-  .thanks h1{font-size:23px}
+  .done-badge{width:72px;height:72px;border-radius:50%;background:#1f9d55;display:flex;align-items:center;justify-content:center;margin:6px auto 14px;animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+  @keyframes pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+  .thanks h1.done-title{font-size:32px;margin:0 0 6px}
+  .done-sub{font-size:17px;font-weight:500;text-align:center;margin:0 0 14px;text-wrap:balance}
   .contact{font-size:16px}
   .hours{font-size:13px;color:var(--muted)}
   .quizcta{margin-top:22px;border:1px solid var(--line);background:#fff;border-radius:16px;padding:18px}
@@ -111,7 +114,9 @@
 
   <!-- 7 thanks -->
   <section class="slide hidden thanks" data-s="thanks">
-    <h1>شكراً لأنكم اخترتوا انفكتوس فايتر يكون جزء من رحلة البطل</h1>
+    <div class="done-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="38" height="38"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h1 class="done-title">شكراً لكم!</h1>
+    <p class="done-sub" id="doneSub">تم تسجيل البطل بنجاح، وسعيدين إنكم اخترتوا انفكتوس فايتر يكون جزء من رحلة البطل.</p>
     <p class="contact" id="contactMsg"></p>
     <p class="hours">أوقات دوامنا من الساعة 2:30 العصر إلى 9:30 مساءً، ما عدا الجمعة.</p>
     <div class="quizcta">
@@ -224,6 +229,7 @@ $("#submit").onclick=async()=>{
   try{ trackLead(data.phone); }catch(e){}
   $("#contactMsg").textContent=contactMessage();
   $("#quizTitle").textContent=`اكتشف شخصية ${data.childName} في 4 دقائق`;
+  $("#doneSub").textContent=`تم تسجيل ${data.childName} بنجاح، وسعيدين إنكم اخترتوا انفكتوس فايتر يكون جزء من رحلة البطل.`;
   $("#quizBtn").href = res.demo
     ? "/quiz/?t=demo&go=1&n="+encodeURIComponent(data.childName)+"&a="+data.age
     : "/quiz/?go=1&t="+encodeURIComponent(res.token);
