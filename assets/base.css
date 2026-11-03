@@ -42,3 +42,7 @@ input:focus{outline:2px solid var(--red);outline-offset:1px}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .spin{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.5);border-top-color:#fff;border-radius:50%;animation:sp 0.8s linear infinite;vertical-align:-3px}
 @keyframes sp{to{transform:rotate(360deg)}}
+
+.xp{font-weight:700;color:var(--red)}
+.hero .xp{color:#fff}
+.by .xp{font-weight:800}

@@ -54,7 +54,7 @@
   <!-- not registered / bad link -->
   <section id="noLead" class="hidden">
     <h1>اكتشف شخصية بطلك</h1>
-    <p class="by">من إعداد خبراء انفكتوس فايتر</p>
+    <p class="by">من إعداد <strong class="xp">خبراء انفكتوس فايتر</strong></p>
     <p class="lead">الاختبار مجاني ويظهر لك بعد ما تسجّل بيانات بطلك. التسجيل ياخذ أقل من دقيقة.</p>
     <a class="btn" href="/?ref=share">سجّل بطلك وابدأ الاختبار</a>
   </section>
@@ -62,7 +62,7 @@
   <!-- intro -->
   <section id="intro" class="hidden">
     <h1 id="introTitle">اكتشف شخصية بطلك</h1>
-    <p class="by">من إعداد خبراء انفكتوس فايتر</p>
+    <p class="by">من إعداد <strong class="xp">خبراء انفكتوس فايتر</strong></p>
     <p class="lead">18 سؤالاً سريعاً عن مواقف من يوم طفلك، تظهر بعدها نتيجة توضح نقاط قوته، والجانب الذي يحتاج اهتمامك، وخطوات عملية تبدأ بها من اليوم.</p>
     <div class="card">
       <div id="demoFields" class="hidden">
@@ -199,7 +199,7 @@ function renderResult(r){
      ${Object.keys(AX).map(k=>`<div class="row"><span>${AX[k]}</span><span>${s[k]} من 6 · ${level(s[k])}</span></div>`).join("")}
    </div>` : "";
   $("#result").innerHTML=`
-   <div class="hero fade"><small>نتيجة اختبار شخصية البطل، من خبراء انفكتوس فايتر</small><h1>${name}: البطل ${T.name}</h1><p>${T.tag}</p></div>
+   <div class="hero fade"><small>نتيجة اختبار شخصية البطل، من <strong class="xp">خبراء انفكتوس فايتر</strong></small><h1>${name}: البطل ${T.name}</h1><p>${T.tag}</p></div>
    <div class="sec"><h2>من هو ${name}؟</h2><p>${fill(T.who)}</p></div>
    <div class="sec"><h2>نقاط قوته</h2><ul>${T.str.map(x=>`<li>${x}</li>`).join("")}</ul></div>
    <div class="sec"><h2>الجانب الذي يحتاج اهتمامك</h2><p>${fill(T.work)}</p></div>
@@ -212,7 +212,7 @@ function renderResult(r){
      <button class="btn soft" id="shareQuiz" type="button">شارك الاختبار مع صديق</button>
      <div class="toast" id="toast"></div>
    </div>
-   <p class="note">تقييم توعوي من إعداد خبراء انفكتوس فايتر، ولا يغني عن استشارة مختص.</p>
+   <p class="note">تقييم توعوي من إعداد <strong class="xp">خبراء انفكتوس فايتر</strong>، ولا يغني عن استشارة مختص.</p>
    ${DEMO?'<button class="btn ghost" id="again">أعد الاختبار</button>':""}
    ${staff}`;
   $("#saveImg").onclick=saveImage;
@@ -248,11 +248,12 @@ async function makeCard(hide){
   x.fillStyle=g; roundRect(x,60,60,W-120,820,48); x.fill();
   x.fillStyle="rgba(255,255,255,.12)"; x.beginPath(); x.arc(170,820,230,0,Math.PI*2); x.fill();
   x.direction="rtl"; x.textAlign="center"; x.fillStyle="#fff";
-  x.font=F(500,38); x.globalAlpha=.9; x.fillText("نتيجة اختبار شخصية البطل",W/2,190); x.globalAlpha=1;
+  x.font=F(500,36); x.globalAlpha=.9; x.fillText("نتيجة اختبار شخصية البطل",W/2,170); x.globalAlpha=1;
+  x.font=F(700,38); x.fillText("من خبراء انفكتوس فايتر",W/2,225);
   const nm = hide ? "" : r.name;
   x.font=F(700,nm?92:104);
   const title = nm ? `${nm}` : "بطلي";
-  x.fillText(title,W/2,nm?380:420);
+  x.fillText(title,W/2,nm?390:430);
   x.font=F(700,nm?84:96); x.fillText(`البطل ${T.name}`,W/2,nm?500:560);
   x.font=F(400,42); wrapLines(x,T.tag,W-260).forEach((l,k)=>x.fillText(l,W/2,(nm?620:690)+k*62));
   // footer
