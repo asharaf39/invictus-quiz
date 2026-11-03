@@ -16,7 +16,7 @@ PAGES = {
     "":       {"source": "زيارة مباشرة", "snap": "", "meta": "", "gtag": ""},
     "snap":   {"source": "سناب شات",     "snap": "", "meta": "", "gtag": ""},
     "insta":  {"source": "انستجرام",     "snap": "", "meta": "", "gtag": ""},
-    "google": {"source": "Google Ads",   "snap": "", "meta": "", "gtag": ""},
+    "google": {"source": "Google Ads",   "snap": "", "meta": "", "gtag": "AW-10864651559/4ZkxCNvts6AYEKfa1bwo"},
 }
 
 
@@ -38,8 +38,9 @@ def pixel_fns(cfg):
     if cfg["meta"]:
         calls.append("if(window.fbq)fbq('track','Lead');")
     if cfg["gtag"] and "/" in cfg["gtag"]:
+        calls.append("if(window.gtag&&phone)gtag('set','user_data',{phone_number:'+'+phone});")
         calls.append(f"if(window.gtag)gtag('event','conversion',{{send_to:'{cfg['gtag']}'}});")
-    return "function trackLead(){" + "".join(calls) + "}"
+    return "function trackLead(phone){" + "".join(calls) + "}"
 
 
 for folder, cfg in PAGES.items():

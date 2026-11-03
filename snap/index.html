@@ -126,7 +126,7 @@
 <script src="/assets/config.js"></script>
 <script>
 const PAGE = {source:"سناب شات", sourceShared:"مشاركة من الاختبار"};
-function trackLead(){}
+function trackLead(phone){}
 const BRANCHES=[["حي الوادي","حي الوادي"],["حي الياسمين","حي الياسمين"],["حي القيروان","حي القيروان"],["حي الحمراء (قريباً)","",true]];
 const GOALS=[ // [label, description, value stored in sheet]
  ["بناء الشخصية","خجول / انطوائي","بناء شخصية"],
@@ -221,7 +221,7 @@ $("#submit").onclick=async()=>{
   for(let a=0;a<2&&!(res&&res.ok);a++){ try{res=await post(payload);}catch(e){res=null; await new Promise(r=>setTimeout(r,800));} }
   sending=false; b.disabled=false; b.textContent="سجّل البطل";
   if(!(res&&res.ok)){ err("#errSend",true); return; }
-  try{ trackLead(); }catch(e){}
+  try{ trackLead(data.phone); }catch(e){}
   $("#contactMsg").textContent=contactMessage();
   $("#quizTitle").textContent=`اكتشف شخصية ${data.childName} في 4 دقائق`;
   $("#quizBtn").href = res.demo
