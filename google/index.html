@@ -62,7 +62,6 @@
     <p class="q">وين ودك تكون رحلة ابنك؟</p>
     <p class="sub">لا تنسى تاخذ صورة مع بطلك في أول يوم، بتفرح فيها بعدين.</p>
     <div id="branches"></div>
-    <p class="soon hidden" id="soonNote">فرع الحمراء قريب. بنسجلك الحين، ونتواصل معك أول ما نحدد موعد الافتتاح.</p>
   </section>
 
   <!-- 3 name -->
@@ -120,7 +119,7 @@
 <script>
 const PAGE = {source:"Google Ads", sourceShared:"مشاركة من الاختبار"};
 function trackLead(){}
-const BRANCHES=[["حي الوادي","حي الوادي"],["حي الياسمين","حي الياسمين"],["حي القيروان","حي القيروان"],["حي الحمراء (قريباً)","حي الحمراء"]];
+const BRANCHES=[["حي الوادي","حي الوادي"],["حي الياسمين","حي الياسمين"],["حي القيروان","حي القيروان"],["حي الحمراء (قريباً)","",true]];
 const GOALS=[ // [label, description, value stored in sheet]
  ["بناء الشخصية","خجول / انطوائي","بناء شخصية"],
  ["تفريغ طاقة وترفيه","طاقته زايدة / مشاغب","تفريغ طاقة و ترفيه"],
@@ -159,12 +158,11 @@ const idx=n=>slides.findIndex(s=>s.dataset.s===n);
 const go=n=>show(idx(n));
 
 // options
-$("#branches").innerHTML=BRANCHES.map(([l,v])=>`<button type="button" class="opt" data-v="${v}">${l}</button>`).join("");
+$("#branches").innerHTML=BRANCHES.map(([l,v,off])=>`<button type="button" class="opt" data-v="${v}"${off?" disabled":""}>${l}</button>`).join("");
 $("#goals").innerHTML=GOALS.map(([l,d,v])=>`<button type="button" class="opt" data-v="${v}">${l}<small>${d}</small></button>`).join("");
-document.querySelectorAll("#branches .opt").forEach(b=>b.onclick=()=>{
+document.querySelectorAll("#branches .opt:not([disabled])").forEach(b=>b.onclick=()=>{
   document.querySelectorAll("#branches .opt").forEach(x=>x.classList.remove("sel")); b.classList.add("sel");
-  data.branch=b.dataset.v; const soon=data.branch==="حي الحمراء"; $("#soonNote").classList.toggle("hidden",!soon);
-  setTimeout(()=>go("name"), soon?1400:220);
+  data.branch=b.dataset.v; setTimeout(()=>go("name"),220);
 });
 document.querySelectorAll("#goals .opt").forEach(b=>b.onclick=()=>{
   document.querySelectorAll("#goals .opt").forEach(x=>x.classList.remove("sel")); b.classList.add("sel");
