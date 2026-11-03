@@ -192,7 +192,9 @@ const fill=t=>pickB(t).replaceAll("{n}",name).replaceAll("{age}",ageText(ageNum)
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const bandOf=n=>n<=5?"a":n<=9?"b":"c";
 const EP=(window.IF_CONFIG&&IF_CONFIG.endpoint)||"";
-const token=new URLSearchParams(location.search).get("t")||"";
+const QS=new URLSearchParams(location.search);
+const token=QS.get("t")||"";
+const GO=QS.get("go")==="1"; // came straight from the registration thank-you screen -> skip the intro
 const DEMO=!EP||token==="demo";
 const SHARE_URL=location.origin+"/?ref=share";
 let lastResult=null;
@@ -206,25 +208,32 @@ async function api(method,payload){
 }
 
 async function init(){
-  if(DEMO){ $("#demoFields").classList.remove("hidden"); only("intro"); return; }
+  if(DEMO){
+    const qn=(QS.get("n")||"").trim(), qa=parseInt(QS.get("a"),10);
+    if(qn&&qa>=1&&qa<=17){ name=esc(qn); ageNum=qa; band=bandOf(qa); if(GO){ startQuiz(); return; } $("#introTitle").textContent=`اكتشف شخصية ${qn}`; demoPrefilled=true; only("intro"); return; }
+    $("#demoFields").classList.remove("hidden"); only("intro"); return;
+  }
   if(!/^[a-f0-9]{12}$/.test(token)){ only("noLead"); return; }
   let lead=null;
   for(let a=0;a<2&&!lead;a++){ try{ lead=await api("GET"); }catch(e){ await new Promise(r=>setTimeout(r,900)); } }
   if(!lead||!lead.ok){ only("noLead"); return; }
   name=esc(lead.name||"بطلك"); ageNum=lead.age||5; band=bandOf(ageNum);
   if(lead.done&&lead.result){ renderResult(lead.result); return; }
+  if(GO){ startQuiz(); return; }
   $("#introTitle").textContent=`اكتشف شخصية ${lead.name||"بطلك"}`;
   only("intro");
 }
 
+let demoPrefilled=false;
+function startQuiz(){ i=0; ans.fill(null); only("quiz"); render(); }
 $("#start").onclick=()=>{
-  if(DEMO){
+  if(DEMO&&!demoPrefilled){
     const raw=($("#ag").value||"").replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٫،,]/g,".");
     const m=raw.match(/\d+(\.\d+)?/); const n=m?Math.floor(parseFloat(m[0])):0;
     if(!n||n<1||n>17){ $("#agErr").classList.remove("hidden"); return; }
     $("#agErr").classList.add("hidden"); ageNum=n; band=bandOf(n); name=esc(($("#nm").value||"").trim()||"بطلك");
   }
-  i=0; ans.fill(null); only("quiz"); render();
+  startQuiz();
 };
 $("#back").onclick=()=>{ if(i>0){i--;render();} };
 

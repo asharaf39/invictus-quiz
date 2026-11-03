@@ -216,7 +216,9 @@ $("#submit").onclick=async()=>{
   try{ trackLead(); }catch(e){}
   $("#contactMsg").textContent=contactMessage();
   $("#quizTitle").textContent=`اكتشف شخصية ${data.childName} في 4 دقائق`;
-  $("#quizBtn").href="/quiz/?t="+encodeURIComponent(res.token);
+  $("#quizBtn").href = res.demo
+    ? "/quiz/?t=demo&go=1&n="+encodeURIComponent(data.childName)+"&a="+data.age
+    : "/quiz/?go=1&t="+encodeURIComponent(res.token);
   go("thanks");
 };
 show(0);
