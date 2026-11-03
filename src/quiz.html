@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>اختبار شخصية البطل | انفكتوس فايتر</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/base.css">
+<style>
+  label{display:block;font-weight:600;font-size:14px;margin:16px 0 6px}
+  .meta{display:flex;gap:16px;color:var(--muted);font-size:13px;margin-top:14px}
+  .q{font-size:20px;font-weight:600;line-height:1.6;margin:0 0 20px;min-height:64px}
+  .hero{border-radius:20px;padding:26px 22px;color:#fff;background:var(--accent);margin-bottom:18px;position:relative;overflow:hidden}
+  .hero:after{content:"";position:absolute;inset:auto -40px -60px auto;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.12)}
+  .hero small{display:block;opacity:.85;font-size:13px;margin-bottom:6px}
+  .hero h1{color:#fff;font-size:27px;margin:0 0 8px}
+  .hero p{margin:0;opacity:.95;font-size:16px}
+  .sec{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 8px;margin-bottom:12px}
+  .sec h2{display:flex;align-items:center;gap:8px}
+  .sec h2:before{content:"";width:4px;height:18px;border-radius:2px;background:var(--accent);display:inline-block}
+  ul,ol{margin:0 0 12px;padding-right:20px}
+  li{margin-bottom:6px}
+  .actions{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:6px}
+  .actions .btn{margin-top:10px}
+  .check{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);margin:2px 0 0;font-weight:400}
+  .check input{width:18px;height:18px;padding:0;accent-color:var(--red)}
+  .toast{font-size:13.5px;color:var(--muted);text-align:center;margin-top:8px;min-height:20px}
+  .staff{margin-top:26px;border:1px dashed #b9b4ad;border-radius:14px;padding:14px 16px;background:#fff;font-size:14px}
+  .staff .row{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0}
+  .staff .row:last-child{border:0}
+  .chip{display:inline-block;padding:1px 10px;border-radius:99px;color:#fff;background:var(--accent);font-size:13px}
+  .flag{color:#b42318;font-weight:600}
+  .center{text-align:center;padding-top:40px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><img src="/assets/emblem.png" alt="">انفكتوس فايتر</div>
+
+  <section id="loading" class="center"><span class="spin" style="border-color:rgba(200,16,46,.25);border-top-color:var(--red)"></span></section>
+
+  <!-- not registered / bad link -->
+  <section id="noLead" class="hidden">
+    <h1>اكتشف شخصية بطلك</h1>
+    <p class="by">من إعداد خبراء انفكتوس فايتر</p>
+    <p class="lead">الاختبار مجاني ويظهر لك بعد ما تسجّل بيانات بطلك. التسجيل ياخذ أقل من دقيقة.</p>
+    <a class="btn" href="/?ref=share">سجّل بطلك وابدأ الاختبار</a>
+  </section>
+
+  <!-- intro -->
+  <section id="intro" class="hidden">
+    <h1 id="introTitle">اكتشف شخصية بطلك</h1>
+    <p class="by">من إعداد خبراء انفكتوس فايتر</p>
+    <p class="lead">18 سؤالاً سريعاً عن مواقف من يوم طفلك، تظهر بعدها نتيجة توضح نقاط قوته، والجانب الذي يحتاج اهتمامك، وخطوات عملية تبدأ بها من اليوم.</p>
+    <div class="card">
+      <div id="demoFields" class="hidden">
+        <label for="nm" style="margin-top:0">اسم البطل</label>
+        <input id="nm" value="سلطان" autocomplete="off">
+        <label for="ag">عمر البطل (بالسنوات)</label>
+        <input id="ag" inputmode="decimal" placeholder="مثال: 5" autocomplete="off">
+        <div id="agErr" class="err hidden">اكتب عمر البطل بالأرقام، مثل 5 أو 3.5</div>
+      </div>
+      <div class="meta"><span>أقل من 4 دقائق</span><span>18 سؤالاً</span><span>مجاني</span></div>
+      <button class="btn" id="start" type="button">ابدأ الاختبار</button>
+    </div>
+  </section>
+
+  <!-- quiz -->
+  <section id="quiz" class="hidden">
+    <div class="top"><button class="back" id="back" type="button">السابق</button><span id="count"></span></div>
+    <div class="bar"><div id="prog"></div></div>
+    <div id="qbox"></div>
+  </section>
+
+  <!-- result -->
+  <section id="result" class="hidden"></section>
+</div>
+
+<script src="/assets/config.js"></script>
+<script>
+{{QUIZ_DATA}}
+let name="بطلك", band="a", i=0, ans=new Array(Q.length).fill(null);
+const $=s=>document.querySelector(s);
+const pickB=v=>(v&&typeof v==="object"&&!Array.isArray(v))?(v[band]??v.b):v;
+const fill=t=>pickB(t).replaceAll("{n}",name).replaceAll("{age}",ageText(ageNum));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const bandOf=n=>n<=5?"a":n<=9?"b":"c";
+const EP=(window.IF_CONFIG&&IF_CONFIG.endpoint)||"";
+const token=new URLSearchParams(location.search).get("t")||"";
+const DEMO=!EP||token==="demo";
+const SHARE_URL=location.origin+"/?ref=share";
+let lastResult=null;
+
+function only(id){["loading","noLead","intro","quiz","result"].forEach(x=>$("#"+x).classList.toggle("hidden",x!==id));window.scrollTo(0,0);}
+function setAccent(c,s){document.documentElement.style.setProperty("--accent",c);document.documentElement.style.setProperty("--accent-soft",s);}
+
+async function api(method,payload){
+  if(method==="GET"){const r=await fetch(EP+"?action=lead&t="+encodeURIComponent(token));return r.json();}
+  const r=await fetch(EP,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});return r.json();
+}
+
+async function init(){
+  if(DEMO){ $("#demoFields").classList.remove("hidden"); only("intro"); return; }
+  if(!/^[a-f0-9]{12}$/.test(token)){ only("noLead"); return; }
+  let lead=null;
+  for(let a=0;a<2&&!lead;a++){ try{ lead=await api("GET"); }catch(e){ await new Promise(r=>setTimeout(r,900)); } }
+  if(!lead||!lead.ok){ only("noLead"); return; }
+  name=esc(lead.name||"بطلك"); ageNum=lead.age||5; band=bandOf(ageNum);
+  if(lead.done&&lead.result){ renderResult(lead.result); return; }
+  $("#introTitle").textContent=`اكتشف شخصية ${lead.name||"بطلك"}`;
+  only("intro");
+}
+
+$("#start").onclick=()=>{
+  if(DEMO){
+    const raw=($("#ag").value||"").replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٫،,]/g,".");
+    const m=raw.match(/\d+(\.\d+)?/); const n=m?Math.floor(parseFloat(m[0])):0;
+    if(!n||n<1||n>17){ $("#agErr").classList.remove("hidden"); return; }
+    $("#agErr").classList.add("hidden"); ageNum=n; band=bandOf(n); name=esc(($("#nm").value||"").trim()||"بطلك");
+  }
+  i=0; ans.fill(null); only("quiz"); render();
+};
+$("#back").onclick=()=>{ if(i>0){i--;render();} };
+
+function render(){
+  const q=Q[i], opts=pickB(q.o);
+  $("#count").textContent= i<Q.length-1 ? `سؤال ${i+1} من ${Q.length-1}` : "سؤال أخير";
+  $("#prog").style.width=(i/Q.length*100)+"%";
+  $("#back").disabled=i===0;
+  $("#qbox").innerHTML=`<div class="fade"><p class="q">${fill(q.t)}</p>${opts.map((o,k)=>`<button class="opt${ans[i]===k?" sel":""}" data-k="${k}">${o[0]}</button>`).join("")}</div>`;
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    ans[i]=+b.dataset.k; b.classList.add("sel");
+    if(i===5||i===11) save(false);
+    setTimeout(()=>{ if(i<Q.length-1){i++;render();} else finish(); },220);
+  });
+}
+
+function compute(){
+  const s={conf:0,anger:0,bully:0,screen:0,energy:0,focus:0};
+  Q.forEach((q,k)=>{ if(q.ax&&ans[k]!=null) s[q.ax]+=pickB(q.o)[ans[k]][1]; });
+  const ranked=[...PRIORITY].sort((a,b)=>s[b]-s[a]||PRIORITY.indexOf(a)-PRIORITY.indexOf(b));
+  const top=ranked[0], second=ranked[1];
+  const type = s[top]<=2 ? "balanced" : (top==="screen"?"focus":top);
+  const last=Q[Q.length-1], sport = ans[Q.length-1]!=null ? pickB(last.o)[ans[Q.length-1]][0] : "";
+  return {name, age:ageNum, type, top, second, scores:s, sport};
+}
+
+let saving=Promise.resolve();
+function save(done){
+  if(DEMO) return Promise.resolve();
+  const r=compute();
+  const payload={action:"saveQuiz",t:token,done,answers:ans,scores:r.scores,type:r.type,top:r.top,second:r.second,sport:r.sport};
+  saving=saving.then(async()=>{ for(let a=0;a<3;a++){ try{ const x=await api("POST",payload); if(x&&x.ok) return x; }catch(e){} await new Promise(r=>setTimeout(r,1200)); } });
+  return saving;
+}
+window.addEventListener("pagehide",()=>{
+  if(DEMO||!$("#result").classList.contains("hidden")||ans.every(a=>a==null)) return;
+  const r=compute();
+  try{ navigator.sendBeacon(EP,new Blob([JSON.stringify({action:"saveQuiz",t:token,done:false,answers:ans,scores:r.scores,type:r.type,top:r.top,second:r.second,sport:r.sport})],{type:"text/plain"})); }catch(e){}
+});
+
+function finish(){ const r=compute(); save(true); renderResult(r); }
+
+function renderResult(r){
+  lastResult=r;
+  if(r.name) name=esc(r.name); if(r.age){ ageNum=r.age; band=bandOf(ageNum); }
+  const s=r.scores, T=TYPES[r.type]||TYPES.balanced, top=r.top, second=r.second;
+  setAccent(T.color,T.soft);
+  const secTxt = (r.type!=="balanced" && second && s[second]>=3) ? `<div class="sec"><h2>وننتبه أيضاً إلى</h2><p>${fill(SECOND[second])}</p></div>` : "";
+  const level=v=>v<=2?"جيد":v<=4?"متوسط":"يحتاج اهتمام";
+  const staff = DEMO ? `<div class="staff">
+     <div style="margin-bottom:6px;color:var(--muted);font-size:12.5px">نسخة تجريبية: هذا ما يراه الموظف في الـ CRM (لا يظهر لولي الأمر)</div>
+     <div class="row"><b>النمط</b><span class="chip">${T.name}</span></div>
+     <div class="row"><b>العمر والنسخة</b><span>${ageText(ageNum)} · نسخة ${band==="a"?"3-5":band==="b"?"6-9":"10+"}</span></div>
+     <div class="row"><b>رياضة سابقة</b><span>${r.sport||"-"}</span></div>
+     <div class="row"><b>أعلى محور</b><span>${AX[top]} (${s[top]} من 6)</span></div>
+     ${s.bully>=5?`<div class="row"><b>تنبيه</b><span class="flag">تنمر مرتفع، تعامل بحساسية</span></div>`:""}
+     ${Object.keys(AX).map(k=>`<div class="row"><span>${AX[k]}</span><span>${s[k]} من 6 · ${level(s[k])}</span></div>`).join("")}
+   </div>` : "";
+  $("#result").innerHTML=`
+   <div class="hero fade"><small>نتيجة اختبار شخصية البطل، من خبراء انفكتوس فايتر</small><h1>${name}: البطل ${T.name}</h1><p>${T.tag}</p></div>
+   <div class="sec"><h2>من هو ${name}؟</h2><p>${fill(T.who)}</p></div>
+   <div class="sec"><h2>نقاط قوته</h2><ul>${T.str.map(x=>`<li>${x}</li>`).join("")}</ul></div>
+   <div class="sec"><h2>الجانب الذي يحتاج اهتمامك</h2><p>${fill(T.work)}</p></div>
+   ${secTxt}
+   <div class="sec"><h2>إذا وُجّه بالشكل الصحيح</h2><p>${fill(T.pot)}</p></div>
+   <div class="sec"><h2>خطوات تساعد ${name}</h2><ol>${T.steps.map(x=>`<li>${fill(x)}</li>`).join("")}</ol></div>
+   <div class="actions">
+     <button class="btn" id="saveImg" type="button">احفظ النتيجة كصورة</button>
+     <label class="check"><input type="checkbox" id="hideName"> إخفاء اسم البطل في الصورة</label>
+     <button class="btn soft" id="shareQuiz" type="button">شارك الاختبار مع صديق</button>
+     <div class="toast" id="toast"></div>
+   </div>
+   <p class="note">تقييم توعوي من إعداد خبراء انفكتوس فايتر، ولا يغني عن استشارة مختص.</p>
+   ${DEMO?'<button class="btn ghost" id="again">أعد الاختبار</button>':""}
+   ${staff}`;
+  $("#saveImg").onclick=saveImage;
+  $("#shareQuiz").onclick=shareQuiz;
+  if($("#again")) $("#again").onclick=()=>{ setAccent("#C8102E","#fbe9ec"); only("intro"); };
+  only("result");
+}
+
+function toast(t){ $("#toast").textContent=t; }
+
+async function shareQuiz(){
+  const text="جربت اختبار شخصية البطل من انفكتوس فايتر، مجاني وياخذ 4 دقائق:";
+  try{ if(navigator.share){ await navigator.share({title:"اختبار شخصية البطل",text,url:SHARE_URL}); return; } }catch(e){ if(e&&e.name==="AbortError") return; }
+  try{ await navigator.clipboard.writeText(text+" "+SHARE_URL); toast("نسخنا الرابط، تقدر تلصقه في الواتساب أو سناب."); }
+  catch(e){ toast(SHARE_URL); }
+}
+
+// ---------- share image ----------
+function wrapLines(ctx,text,maxW){ const words=text.split(" "),lines=[]; let line="";
+  for(const w of words){ const t=line?line+" "+w:w; if(ctx.measureText(t).width>maxW&&line){lines.push(line);line=w;} else line=t; }
+  if(line) lines.push(line); return lines; }
+function loadImg(src){ return new Promise(res=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src; }); }
+async function makeCard(hide){
+  const r=lastResult, T=TYPES[r.type]||TYPES.balanced, W=1080,H=1350;
+  const c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
+  try{ await document.fonts.load('700 80px "IBM Plex Sans Arabic"'); await document.fonts.load('400 40px "IBM Plex Sans Arabic"'); }catch(e){}
+  const F=(w,s)=>`${w} ${s}px "IBM Plex Sans Arabic", sans-serif`;
+  x.fillStyle="#faf9f7"; x.fillRect(0,0,W,H);
+  // colored panel
+  const g=x.createLinearGradient(0,0,W,760); g.addColorStop(0,T.color); g.addColorStop(1,shade(T.color,-28));
+  x.fillStyle=g; roundRect(x,60,60,W-120,820,48); x.fill();
+  x.fillStyle="rgba(255,255,255,.12)"; x.beginPath(); x.arc(170,820,230,0,Math.PI*2); x.fill();
+  x.direction="rtl"; x.textAlign="center"; x.fillStyle="#fff";
+  x.font=F(500,38); x.globalAlpha=.9; x.fillText("نتيجة اختبار شخصية البطل",W/2,190); x.globalAlpha=1;
+  const nm = hide ? "" : r.name;
+  x.font=F(700,nm?92:104);
+  const title = nm ? `${nm}` : "بطلي";
+  x.fillText(title,W/2,nm?380:420);
+  x.font=F(700,nm?84:96); x.fillText(`البطل ${T.name}`,W/2,nm?500:560);
+  x.font=F(400,42); wrapLines(x,T.tag,W-260).forEach((l,k)=>x.fillText(l,W/2,(nm?620:690)+k*62));
+  // footer
+  const logo=await loadImg("/assets/emblem.png");
+  x.fillStyle="#C8102E"; x.font=F(700,60);
+  const label="انفكتوس فايتر", tw=x.measureText(label).width;
+  if(logo){ const h=86,w=logo.width*h/logo.height, gap=22, total=w+gap+tw, left=W/2-total/2;
+    x.textAlign="right"; x.fillText(label,left+tw,1065); x.drawImage(logo,left+tw+gap,1003,w,h); x.textAlign="center"; }
+  else x.fillText(label,W/2,1065);
+  x.fillStyle="#1d1d1f"; x.font=F(600,40); x.fillText("اكتشف شخصية بطلك مجاناً",W/2,1180);
+  x.fillStyle="#6b6b70"; x.font=F(400,36); x.direction="ltr"; x.fillText("join.invictus-ksa.info",W/2,1245);
+  return new Promise(res=>c.toBlob(res,"image/png"));
+}
+function roundRect(x,a,b,w,h,r){ x.beginPath(); x.moveTo(a+r,b); x.arcTo(a+w,b,a+w,b+h,r); x.arcTo(a+w,b+h,a,b+h,r); x.arcTo(a,b+h,a,b,r); x.arcTo(a,b,a+w,b,r); x.closePath(); }
+function shade(hex,p){ const n=parseInt(hex.slice(1),16); let R=n>>16,G=n>>8&255,B=n&255; const f=v=>Math.max(0,Math.min(255,Math.round(v+v*p/100)));
+  return "#"+[f(R),f(G),f(B)].map(v=>v.toString(16).padStart(2,"0")).join(""); }
+async function saveImage(){
+  const b=$("#saveImg"); b.disabled=true; toast("");
+  try{
+    const blob=await makeCard($("#hideName").checked);
+    const file=new File([blob],"invictus-hero.png",{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      try{ await navigator.share({files:[file],title:"نتيجة اختبار شخصية البطل"}); }catch(e){ if(!(e&&e.name==="AbortError")) throw e; }
+    } else {
+      const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="invictus-hero.png"; document.body.appendChild(a); a.click(); a.remove();
+      toast("حفظنا الصورة في جهازك.");
+    }
+  }catch(e){ toast("ما قدرنا نحفظ الصورة، جرّب مرة ثانية."); }
+  b.disabled=false;
+}
+
+init();
+</script>
+</body>
+</html>

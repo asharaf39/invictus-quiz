@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>انفكتوس فايتر | سجّل بطلك</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/base.css">
+<style>
+  .journey{list-style:none;padding:0;margin:14px 0 0}
+  .journey li{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:15.5px}
+  .journey li:last-child{border:0}
+  .journey b{flex:0 0 28px;height:28px;border-radius:50%;background:#f1efec;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+  .journey li.done b{background:var(--red);color:#fff}
+  .journey li.done span{text-decoration:line-through;text-decoration-color:rgba(200,16,46,.45);color:var(--muted)}
+  .journey li.now span{font-weight:600}
+  .heroes{margin:16px 0 0;font-weight:600;font-size:15.5px}
+  .gift{margin-top:14px;border-radius:14px;background:var(--red-soft);color:var(--red-dark);padding:12px 14px;font-size:14.5px;line-height:1.65}
+  .q{font-size:22px;font-weight:700;line-height:1.5;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:15px;margin:0 0 18px}
+  label.f{display:block;font-weight:600;font-size:15px;margin:18px 0 6px}
+  label.f small{display:block;font-weight:400;color:var(--muted);font-size:13.5px}
+  .soon{font-size:13.5px;color:var(--muted);margin:-2px 0 10px}
+  .thanks h1{font-size:23px}
+  .contact{font-size:16px}
+  .hours{font-size:13px;color:var(--muted)}
+  .quizcta{margin-top:22px;border:1px solid var(--line);background:#fff;border-radius:16px;padding:18px}
+  .quizcta h2{font-size:19px;line-height:1.5}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <div class="brand" id="brand"><img src="/assets/emblem.png" alt="">انفكتوس فايتر</div>
+
+  <div class="top hidden" id="topbar"><button class="back" id="back" type="button">السابق</button><span id="count"></span></div>
+  <div class="bar hidden" id="barwrap"><div id="prog"></div></div>
+
+  <!-- 1 welcome -->
+  <section class="slide" data-s="welcome">
+    <h1>حياكم الله في انفكتوس فايتر</h1>
+    <p class="lead">مو بس ندرب كاراتيه وتايكوندو، احنا نبني شخصية بطل.</p>
+    <div class="card">
+      <h2>خطوات الرحلة</h2>
+      <ol class="journey">
+        <li class="done"><b>&#10003;</b><span>دخلت الإعلان</span></li>
+        <li class="now"><b>2</b><span>سجّل بياناتك</span></li>
+        <li><b>3</b><span>نقيس مستوى بطلك ونرشحه للمسار الأنسب</span></li>
+        <li><b>4</b><span>يتدرب معنا 36 حصة</span></li>
+        <li><b>5</b><span>تستلمه بطل</span></li>
+      </ol>
+    </div>
+    <p class="heroes">في انفكتوس فايتر ما نسميهم أطفال، نسميهم أبطال.</p>
+    <div class="gift">وبعد التسجيل: اختبار مجاني يكشف لك شخصية بطلك، من إعداد خبراء انفكتوس فايتر.</div>
+    <button class="btn" data-next type="button">يلا نبدأ</button>
+  </section>
+
+  <!-- 2 branch -->
+  <section class="slide hidden" data-s="branch">
+    <p class="q">وين ودك تكون رحلة ابنك؟</p>
+    <p class="sub">لا تنسى تاخذ صورة مع بطلك في أول يوم، بتفرح فيها بعدين.</p>
+    <div id="branches"></div>
+    <p class="soon hidden" id="soonNote">فرع الحمراء قريب. بنسجلك الحين، ونتواصل معك أول ما نحدد موعد الافتتاح.</p>
+  </section>
+
+  <!-- 3 name -->
+  <section class="slide hidden" data-s="name">
+    <p class="q">وش اسم بطلنا؟</p>
+    <p class="sub">وش ودك المدرب ينادي البطل؟</p>
+    <input id="childName" autocomplete="off" placeholder="اكتب اسم البطل" maxlength="40">
+    <div class="err hidden" id="errName">اكتب اسم البطل</div>
+    <button class="btn" data-next type="button">التالي</button>
+  </section>
+
+  <!-- 4 age -->
+  <section class="slide hidden" data-s="age">
+    <p class="q">كم عمر بطلنا؟</p>
+    <p class="sub">معرفة عمر البطل تساعدنا نرشحه للمجموعة الأنسب لفئته العمرية.</p>
+    <input id="age" inputmode="decimal" autocomplete="off" placeholder="مثال: 6">
+    <div class="err hidden" id="errAge">اكتب عمر البطل بالأرقام، مثل 5 أو 3.5</div>
+    <button class="btn" data-next type="button">التالي</button>
+  </section>
+
+  <!-- 5 goal -->
+  <section class="slide hidden" data-s="goal">
+    <p class="q">وش الهدف من بداية الرحلة معنا؟</p>
+    <p class="sub">اختر هدفك واحنا نساعدك.</p>
+    <div id="goals"></div>
+  </section>
+
+  <!-- 6 parent + phone -->
+  <section class="slide hidden" data-s="contact">
+    <label class="f" for="parent" style="margin-top:0"><span class="q" style="display:block">اسم أبو البطل؟</span><small>علشان يكون معنا اسم البطل الثلاثي وقت الشهادات والتكريم</small></label>
+    <input id="parent" autocomplete="off" placeholder="اسم الأب" maxlength="40">
+    <div class="err hidden" id="errParent">اكتب اسم أبو البطل</div>
+    <label class="f" for="phone">رقم جوال ولي الأمر<small>بنتصل عليك ونشرح لك تفاصيل أكثر</small></label>
+    <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="05xxxxxxxx" dir="ltr" style="text-align:right">
+    <div class="err hidden" id="errPhone">اكتب رقم جوال سعودي صحيح يبدأ بـ 05</div>
+    <button class="btn" id="submit" type="button">سجّل البطل</button>
+    <div class="err hidden" id="errSend">صار خلل بسيط في الاتصال. تأكد من الإنترنت واضغط «سجّل البطل» مرة ثانية.</div>
+  </section>
+
+  <!-- 7 thanks -->
+  <section class="slide hidden thanks" data-s="thanks">
+    <h1>شكراً لأنكم اخترتوا انفكتوس فايتر يكون جزء من رحلة البطل</h1>
+    <p class="contact" id="contactMsg"></p>
+    <p class="hours">أوقات دوامنا من الساعة 2:30 العصر إلى 9:30 مساءً، ما عدا الجمعة.</p>
+    <div class="quizcta">
+      <span class="by">اختياري ومجاني</span>
+      <h2 id="quizTitle">اكتشف شخصية بطلك في 4 دقائق</h2>
+      <p class="lead" style="margin:0">اختبار من إعداد خبراء انفكتوس فايتر، يوضح لك نقاط قوته والجانب اللي يحتاج اهتمامك.</p>
+      <a class="btn" id="quizBtn" href="/quiz/">ابدأ الاختبار</a>
+    </div>
+  </section>
+</div>
+
+<script src="/assets/config.js"></script>
+<script>
+const PAGE = {source:"انستجرام", sourceShared:"مشاركة من الاختبار"};
+function trackLead(){}
+const BRANCHES=[["حي الوادي","حي الوادي"],["حي الياسمين","حي الياسمين"],["حي القيروان","حي القيروان"],["حي الحمراء (قريباً)","حي الحمراء"]];
+const GOALS=[ // [label, description, value stored in sheet]
+ ["بناء الشخصية","خجول / انطوائي","بناء شخصية"],
+ ["تفريغ طاقة وترفيه","طاقته زايدة / مشاغب","تفريغ طاقة و ترفيه"],
+ ["غرس قيم أخلاقية","قيادة / انضباط","غرس قيم أخلاقية"],
+ ["تعزيز اللياقة البدنية","حركته قليلة / من أقل مجهود يتعب","تعزيز اللياقة البدنية"],
+ ["الثقة والدفاع عن النفس","خجول قدام غيره أو يتعرض لمضايقات","الثقة والدفاع عن النفس"],
+ ["احتراف وبطولات","عنده موهبة ويحب المنافسة","احتراف و بطولات"]
+];
+const $=s=>document.querySelector(s);
+const slides=[...document.querySelectorAll(".slide")];
+const STEPS=["branch","name","age","goal","contact"]; // counted steps
+const data={branch:"",childName:"",age:0,goal:"",parent:"",phone:""};
+const qs=new URLSearchParams(location.search);
+const shared = qs.get("ref")==="share";
+let cur=0, sending=false;
+
+const digits=s=>String(s||"").replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+function parseAge(v){const m=digits(v).replace(/[٫،,]/g,".").match(/\d+(\.\d+)?/);const n=m?Math.floor(parseFloat(m[0])):0;return n>=1&&n<=17?n:0;}
+function normPhone(v){let d=digits(v).replace(/\D/g,"");
+  if(d.startsWith("00966"))d=d.slice(5); else if(d.startsWith("966"))d=d.slice(3);
+  if(d.startsWith("0"))d=d.slice(1);
+  return /^5\d{8}$/.test(d)?"966"+d:"";}
+const clean=s=>String(s||"").replace(/\s+/g," ").trim();
+
+function show(i){
+  cur=i; slides.forEach((s,k)=>s.classList.toggle("hidden",k!==i));
+  const name=slides[i].dataset.s, step=STEPS.indexOf(name);
+  const counted=step>=0;
+  $("#topbar").classList.toggle("hidden",!counted); $("#barwrap").classList.toggle("hidden",!counted);
+  if(counted){$("#count").textContent=`${step+1} من ${STEPS.length}`;$("#prog").style.width=((step)/STEPS.length*100)+"%";}
+  slides[i].classList.remove("fade"); void slides[i].offsetWidth; slides[i].classList.add("fade");
+  window.scrollTo(0,0);
+  const inp=slides[i].querySelector("input"); if(inp && matchMedia("(min-width:700px)").matches) inp.focus();
+}
+const idx=n=>slides.findIndex(s=>s.dataset.s===n);
+const go=n=>show(idx(n));
+
+// options
+$("#branches").innerHTML=BRANCHES.map(([l,v])=>`<button type="button" class="opt" data-v="${v}">${l}</button>`).join("");
+$("#goals").innerHTML=GOALS.map(([l,d,v])=>`<button type="button" class="opt" data-v="${v}">${l}<small>${d}</small></button>`).join("");
+document.querySelectorAll("#branches .opt").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#branches .opt").forEach(x=>x.classList.remove("sel")); b.classList.add("sel");
+  data.branch=b.dataset.v; const soon=data.branch==="حي الحمراء"; $("#soonNote").classList.toggle("hidden",!soon);
+  setTimeout(()=>go("name"), soon?1400:220);
+});
+document.querySelectorAll("#goals .opt").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#goals .opt").forEach(x=>x.classList.remove("sel")); b.classList.add("sel");
+  data.goal=b.dataset.v; setTimeout(()=>go("contact"),220);
+});
+
+function err(id,on){$(id).classList.toggle("hidden",!on);}
+document.querySelectorAll("[data-next]").forEach(b=>b.onclick=()=>{
+  const s=slides[cur].dataset.s;
+  if(s==="welcome") return go("branch");
+  if(s==="name"){data.childName=clean($("#childName").value); err("#errName",!data.childName); if(data.childName) go("age");}
+  if(s==="age"){data.age=parseAge($("#age").value); err("#errAge",!data.age); if(data.age) go("goal");}
+});
+["#childName","#age"].forEach(id=>$(id).addEventListener("keydown",e=>{if(e.key==="Enter")slides[cur].querySelector("[data-next]").click();}));
+$("#phone").addEventListener("keydown",e=>{if(e.key==="Enter")$("#submit").click();});
+$("#back").onclick=()=>{const s=slides[cur].dataset.s,step=STEPS.indexOf(s); show(step<=0?idx("welcome"):idx(STEPS[step-1]));};
+
+// Riyadh time contact message
+function riyadhNow(){const p=new Intl.DateTimeFormat("en-US",{timeZone:"Asia/Riyadh",weekday:"short",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date());
+  const g=t=>p.find(x=>x.type===t).value; const days={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
+  return {day:days[g("weekday")],min:(+g("hour")%24)*60+ +g("minute")};}
+function contactMessage(){
+  const {day,min}=riyadhNow(), H=(window.IF_CONFIG&&IF_CONFIG.hours)||{open:"14:30",close:"21:30",closedDay:5};
+  const toMin=s=>{const [h,m]=s.split(":");return h*60+ +m;}; const o=toMin(H.open), c=toMin(H.close);
+  const nextDay = ((day+1)%7===H.closedDay) ? "يوم السبت" : "بكرة";
+  if(day===H.closedDay) return "اليوم الجمعة إجازة، وبنتواصل معكم يوم السبت من الساعة 2:30 العصر.";
+  if(min<o) return "بنتواصل معكم اليوم من بعد الساعة 2:30 العصر، أول ما يبدأ دوامنا.";
+  if(min<c-60) return "بنتواصل معكم خلال ساعة من الحين.";
+  if(min<c) return `بنتواصل معكم خلال ساعة، وإذا انتهى الدوام قبلها بنكلمكم ${nextDay} من الساعة 2:30 العصر.`;
+  return `بنتواصل معكم ${nextDay} من الساعة 2:30 العصر، أول ما يبدأ دوامنا.`;
+}
+
+async function post(payload){
+  const ep=window.IF_CONFIG&&IF_CONFIG.endpoint;
+  if(!ep){ await new Promise(r=>setTimeout(r,500)); return {ok:true,token:"demo",demo:true}; }
+  const r=await fetch(ep,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
+  return r.json();
+}
+$("#submit").onclick=async()=>{
+  if(sending) return;
+  data.parent=clean($("#parent").value); data.phone=normPhone($("#phone").value);
+  err("#errParent",!data.parent); err("#errPhone",!data.phone); err("#errSend",false);
+  if(!data.parent||!data.phone) return;
+  sending=true; const b=$("#submit"); b.disabled=true; b.innerHTML='<span class="spin"></span>';
+  const payload={action:"register",childName:data.childName,parent:data.parent,phone:data.phone,age:data.age,goal:data.goal,branch:data.branch,
+    source: shared ? PAGE.sourceShared : PAGE.source, campaign:qs.get("utm_campaign")||"", ad:qs.get("utm_content")||qs.get("utm_ad")||"", ref:qs.get("ref")||"", page:location.pathname};
+  let res=null;
+  for(let a=0;a<2&&!(res&&res.ok);a++){ try{res=await post(payload);}catch(e){res=null; await new Promise(r=>setTimeout(r,800));} }
+  sending=false; b.disabled=false; b.textContent="سجّل البطل";
+  if(!(res&&res.ok)){ err("#errSend",true); return; }
+  try{ trackLead(); }catch(e){}
+  $("#contactMsg").textContent=contactMessage();
+  $("#quizTitle").textContent=`اكتشف شخصية ${data.childName} في 4 دقائق`;
+  $("#quizBtn").href="/quiz/?t="+encodeURIComponent(res.token);
+  go("thanks");
+};
+show(0);
+</script>
+</body>
+</html>
