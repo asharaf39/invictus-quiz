@@ -7,7 +7,7 @@
 <title>اختبار شخصية البطل | انفكتوس فايتر</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/base.css">
+<link rel="stylesheet" href="/assets/base.css?v=1ad27a60">
 <style>
   label{display:block;font-weight:600;font-size:14px;margin:16px 0 6px}
   .meta{display:flex;gap:16px;color:var(--muted);font-size:13px;margin-top:14px}
@@ -47,7 +47,7 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="brand"><img src="/assets/emblem.png" alt="">انفكتوس فايتر</div>
+  <div class="brand"><img src="/assets/emblem.png?v=ccf49ac8" alt="">انفكتوس فايتر</div>
 
   <section id="loading" class="center"><span class="spin" style="border-color:rgba(200,16,46,.25);border-top-color:var(--red)"></span></section>
 
@@ -88,7 +88,7 @@
   <section id="result" class="hidden"></section>
 </div>
 
-<script src="/assets/config.js"></script>
+<script src="/assets/config.js?v=ff308fc0"></script>
 <script>
 const AX = {conf:"الثقة",anger:"الانفعال",bully:"التنمر",screen:"الشاشات",energy:"الطاقة",focus:"التركيز"};
 const ageText=n=>n===1?"سنة":n===2?"سنتين":n<=10?`${n} سنوات`:`${n} سنة`;
@@ -361,7 +361,7 @@ async function makeCard(hide){
   x.font=F(700,nm?84:96); x.fillText(`البطل ${T.name}`,W/2,nm?500:560);
   x.font=F(400,42); wrapLines(x,T.tag,W-260).forEach((l,k)=>x.fillText(l,W/2,(nm?620:690)+k*62));
   // footer
-  const logo=await loadImg("/assets/emblem.png");
+  const logo=await loadImg("/assets/emblem.png?v=ccf49ac8");
   x.fillStyle="#C8102E"; x.font=F(700,60);
   const label="انفكتوس فايتر", tw=x.measureText(label).width;
   if(logo){ const h=86,w=logo.width*h/logo.height, gap=22, total=w+gap+tw, left=W/2-total/2;

@@ -5,6 +5,7 @@ Edit src/form.html once, then run:  python3 build.py
 Pixel IDs: fill them in PAGES below (empty = pixel not installed on that page).
 """
 from pathlib import Path
+import hashlib
 
 ROOT = Path(__file__).parent
 TEMPLATE = (ROOT / "src" / "form.html").read_text(encoding="utf-8")
@@ -43,6 +44,14 @@ def pixel_fns(cfg):
     return "function trackLead(phone){" + "".join(calls) + "}"
 
 
+def bust(html):
+    """Add ?v=<content hash> to /assets/ files so browsers and Hostinger's CDN (7-day cache) fetch new versions."""
+    for name in ["config.js", "base.css", "emblem.png"]:
+        h = hashlib.md5((ROOT / "assets" / name).read_bytes()).hexdigest()[:8]
+        html = html.replace(f"/assets/{name}", f"/assets/{name}?v={h}")
+    return html
+
+
 for folder, cfg in PAGES.items():
     html = (TEMPLATE
             .replace("{{SOURCE}}", cfg["source"])
@@ -51,12 +60,12 @@ for folder, cfg in PAGES.items():
             .replace("{{PIXEL_FNS}}", pixel_fns(cfg)))
     out_dir = ROOT / folder if folder else ROOT
     out_dir.mkdir(exist_ok=True)
-    (out_dir / "index.html").write_text(html, encoding="utf-8")
+    (out_dir / "index.html").write_text(bust(html), encoding="utf-8")
     print("built", (folder or "/") , "->", cfg["source"])
 
 # quiz page: src/quiz.html + src/quiz-data.js (questions, types, texts)
 quiz = (ROOT / "src" / "quiz.html").read_text(encoding="utf-8").replace(
     "{{QUIZ_DATA}}", (ROOT / "src" / "quiz-data.js").read_text(encoding="utf-8"))
 (ROOT / "quiz").mkdir(exist_ok=True)
-(ROOT / "quiz" / "index.html").write_text(quiz, encoding="utf-8")
+(ROOT / "quiz" / "index.html").write_text(bust(quiz), encoding="utf-8")
 print("built /quiz")
