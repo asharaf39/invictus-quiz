@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>اختبار شخصية البطل (نسخة تجريبية)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#C8102E; --ink:#1d1d1f; --muted:#6b6b70; --line:#e7e5e2; --bg:#faf9f7; --card:#ffffff;
+    --accent:#C8102E; --accent-soft:#fbe9ec;
+  }
+  :root{color-scheme:light}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;line-height:1.75;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:540px;margin:0 auto;padding:20px 18px 48px}
+  .demo{font-size:12px;color:var(--muted);text-align:center;border:1px dashed var(--line);border-radius:10px;padding:6px 10px;margin-bottom:18px}
+  .brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;color:var(--red);margin-bottom:22px}
+  .brand i{width:10px;height:10px;border-radius:2px;background:var(--red);display:inline-block}
+  h1{font-size:26px;line-height:1.4;margin:0 0 10px}
+  h2{font-size:18px;margin:0 0 8px}
+  p{margin:0 0 12px}
+  .lead{color:var(--muted);font-size:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+  label{display:block;font-weight:600;font-size:14px;margin:16px 0 6px}
+  input{width:100%;font:inherit;font-size:16px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);-webkit-text-fill-color:var(--ink);caret-color:var(--red)}
+  input:focus{outline:2px solid var(--red);outline-offset:1px}
+  .btn{display:block;width:100%;font:inherit;font-weight:600;font-size:16px;border:0;border-radius:12px;padding:14px;background:var(--red);color:#fff;cursor:pointer;margin-top:20px}
+  .btn:active{transform:scale(.99)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  .meta{display:flex;gap:16px;color:var(--muted);font-size:13px;margin-top:14px}
+  /* quiz */
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:13px;color:var(--muted)}
+  .back{background:none;border:0;font:inherit;color:var(--muted);cursor:pointer;padding:4px 0}
+  .back[disabled]{opacity:.3;cursor:default}
+  .bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:26px}
+  .bar>div{height:100%;background:var(--red);width:0;transition:width .3s ease}
+  .q{font-size:20px;font-weight:600;line-height:1.6;margin:0 0 20px;min-height:64px}
+  .opt{display:block;width:100%;text-align:right;font:inherit;font-size:16px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 16px;margin-bottom:10px;cursor:pointer;color:var(--ink);transition:border-color .15s,background .15s}
+  .opt:hover{border-color:#cfcac4}
+  .opt.sel{border-color:var(--red);background:var(--accent-soft)}
+  .fade{animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  /* result */
+  .hero{border-radius:20px;padding:26px 22px;color:#fff;background:var(--accent);margin-bottom:18px;position:relative;overflow:hidden}
+  .hero:after{content:"";position:absolute;inset:auto -40px -60px auto;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.12)}
+  .hero small{display:block;opacity:.85;font-size:13px;margin-bottom:6px}
+  .hero h1{color:#fff;font-size:27px;margin:0 0 8px}
+  .hero p{margin:0;opacity:.95;font-size:16px}
+  .sec{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 8px;margin-bottom:12px}
+  .sec h2{display:flex;align-items:center;gap:8px}
+  .sec h2:before{content:"";width:4px;height:18px;border-radius:2px;background:var(--accent);display:inline-block}
+  ul,ol{margin:0 0 12px;padding-right:20px}
+  li{margin-bottom:6px}
+  .note{font-size:12.5px;color:var(--muted);text-align:center;margin:18px 0 0}
+  .staff{margin-top:26px;border:1px dashed #b9b4ad;border-radius:14px;padding:14px 16px;background:#fff;font-size:14px}
+  .staff b{font-weight:600}
+  .staff .row{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0}
+  .staff .row:last-child{border:0}
+  .chip{display:inline-block;padding:1px 10px;border-radius:99px;color:#fff;background:var(--accent);font-size:13px}
+  .flag{color:#b42318;font-weight:600}
+  .hidden{display:none}
+  .by{display:inline-block;font-size:13.5px;font-weight:600;color:var(--red);background:#fbe9ec;border-radius:99px;padding:4px 12px;margin:0 0 14px}
+  input::placeholder{color:#a8a39d;-webkit-text-fill-color:#a8a39d}
+  .err{color:#b42318;font-size:13px;margin-top:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="demo">نسخة تجريبية للمراجعة الداخلية</div>
+  <div class="brand"><i></i>انفكتوس فايتر</div>
+
+  <!-- intro -->
+  <section id="intro">
+    <h1>اكتشف شخصية بطلك</h1>
+    <p class="by">من إعداد خبراء انفكتوس فايتر</p>
+    <p class="lead">18 سؤالاً سريعاً عن مواقف من يوم طفلك، تظهر بعدها نتيجة توضح نقاط قوته، والجانب الذي يحتاج اهتمامك، وخطوات عملية تبدأ بها من اليوم.</p>
+    <div class="card">
+      <label for="nm">اسم البطل</label>
+      <input id="nm" value="سلطان" autocomplete="off">
+      <label for="ag">عمر البطل (بالسنوات)</label>
+      <input id="ag" inputmode="numeric" placeholder="مثال: 5" autocomplete="off">
+      <div id="agErr" class="err hidden">اكتب عمر البطل بالأرقام، مثل 5 أو 3.5</div>
+      <div class="meta"><span>أقل من 4 دقائق</span><span>18 سؤالاً</span><span>مجاني</span></div>
+      <button class="btn" id="start">ابدأ الاختبار</button>
+    </div>
+    <p class="note">في النسخة النهائية يأتي الاسم والعمر تلقائياً من التسجيل.</p>
+  </section>
+
+  <!-- quiz -->
+  <section id="quiz" class="hidden">
+    <div class="top"><button class="back" id="back">السابق</button><span id="count"></span></div>
+    <div class="bar"><div id="prog"></div></div>
+    <div id="qbox"></div>
+  </section>
+
+  <!-- result -->
+  <section id="result" class="hidden"></section>
+</div>
+
+<script>
+const AX = {conf:"الثقة",anger:"الانفعال",bully:"التنمر",screen:"الشاشات",energy:"الطاقة",focus:"التركيز"};
+const ageText=n=>n===1?"سنة":n===2?"سنتين":n<=10?`${n} سنوات`:`${n} سنة`;
+let ageNum=5;
+// each question: t = text (string or {a,b}), ax = axis, o = options [[text,points]] (array or {a,b})
+const Q = [
+ {ax:"conf", t:{a:"في مكان جديد فيه أطفال لا يعرفهم (حفلة أو تجمع عائلي)، كيف يتصرف {n} غالباً؟",b:"في مكان جديد فيه أطفال لا يعرفهم (حفلة أو تجمع عائلي)، كيف يتصرف {n} غالباً؟",c:"في مكان جديد فيه أولاد في عمره لا يعرفهم (نادٍ أو تجمع)، كيف يتصرف {n} غالباً؟"},
+  o:[["يندمج ويبدأ اللعب معهم خلال دقائق",0],["يراقب قليلاً ثم يشارك إذا دعاه أحد",1],["يبقى بجانبك ويرفض المشاركة",2]]},
+ {ax:"energy", t:{a:"في نهاية يوم طويل، كيف تكون طاقة {n}؟",b:"بعد يوم دراسي طويل، كيف تكون طاقة {n}؟"},
+  o:[["يهدأ ويرتاح بسهولة",0],["يحتاج وقت لعب حر ليفرغ طاقته",1],["طاقته عالية جداً ويصعب تهدئته حتى وقت النوم",2]]},
+ {ax:"anger", t:"عندما يخسر في لعبة أو مسابقة؟",
+  o:[["يتقبل الخسارة ويطلب أن يلعب مرة أخرى",0],["يزعل أو يغضب، لكنه يرجع ويحاول من جديد",1],["يزعل ويترك اللعب",1],["يغضب بقوة: يبكي أو يرمي الأشياء",2]]},
+ {ax:"focus", t:{a:"عندما يجلس على نشاط هادئ (تلوين، تركيب قطع، قصة)؟",b:"عندما يذاكر أو يحل واجبه؟"},
+  o:{a:[["يكمله حتى ينتهي",0],["يحتاج تشجيعاً ليكمل",1],["يتركه بعد دقيقة أو دقيقتين",2]],
+     b:[["يكمل حتى ينتهي دون تذكير كثير",0],["يحتاج تذكيراً من وقت لآخر ليرجع للواجب",1],["يتشتت بسرعة ويصعب عليه الإكمال حتى لو كان الواجب قصيراً",2]]}},
+ {ax:"bully", t:{a:"إذا أخذ طفل لعبته منه بالقوة؟",b:"إذا أخذ طفل لعبته منه بالقوة؟",c:"إذا أخذ أحد أغراضه أو تعدّى على دوره بالقوة؟"},
+  o:[["يطالب بها بثقة أو يطلب مساعدة شخص كبير",0],["يرد بالضرب مباشرة",1],["يسكت أو يبكي ويتركها",2]]},
+ {ax:"screen", t:"كم ساعة تقريباً يقضي {n} على الجوال أو الآيباد أو التلفزيون في اليوم العادي؟",
+  o:{a:[["أقل من ساعة",0],["من ساعة إلى ساعتين",1],["أكثر من ساعتين",2]],
+     b:[["أقل من ساعة",0],["من ساعة إلى 3 ساعات",1],["أكثر من 3 ساعات",2]],
+     c:[["أقل من ساعتين",0],["من ساعتين إلى 4 ساعات",1],["أكثر من 4 ساعات",2]]}},
+ {ax:"conf", t:{a:"إذا طُلب منه أن يقول اسمه أو يجيب عن سؤال أمام مجموعة من الناس؟",b:"إذا طلبت منه المعلمة أن يقف ويتحدث أمام الفصل؟",c:"إذا طُلب منه أن يقدم عرضاً أو يتحدث أمام الفصل؟"},
+  o:[["يتحمس ويتحدث بثقة",0],["يتحدث لكن بصوت منخفض أو بتردد",1],["يرفض أو يتوتر كثيراً",2]]},
+ {ax:"energy", t:"في مكان يحتاج جلوساً وهدوءاً (مطعم، زيارة، مسجد)؟",
+  o:[["يجلس بهدوء أغلب الوقت",0],["يجلس قليلاً ثم يبدأ بالحركة",1],["لا يستطيع الجلوس، ويتحرك طوال الوقت",2]]},
+ {ax:"anger", t:"عندما ترفض له طلباً (لعبة، وقت إضافي على الجوال)؟",
+  o:[["يتقبل حتى لو كان منزعجاً",0],["يجادل ويُلح لفترة",1],["يصرخ أو يعاند بشدة",2]]},
+ {ax:"focus", t:{a:"عندما تعطيه تعليمة من خطوتين (البس حذاءك وتعال عند الباب)؟",b:"عندما تعطيه تعليمات من خطوتين أو ثلاث (البس حذاءك، أحضر حقيبتك، وانتظرني عند الباب)؟",c:"عندما تطلب منه أكثر من مهمة (رتّب غرفتك، جهّز حقيبتك، ثم ذاكر)؟"},
+  o:[["ينفذها كاملة",0],["ينفذ جزءاً وينسى الباقي",1],["ينشغل بشيء آخر قبل أن يبدأ",2]]},
+ {ax:"bully", t:{a:"هل لاحظت أن أطفالاً آخرين يضايقونه أو يأخذون أغراضه في الحضانة أو في التجمعات؟",b:"هل اشتكى {n} من أن أحداً يضايقه أو يسخر منه في المدرسة أو النادي؟",c:"هل اشتكى {n} من أن أحداً يضايقه أو يسخر منه في المدرسة أو النادي أو في الألعاب الإلكترونية؟"},
+  o:{a:[["لا، أبداً",0],["مرة أو مرتين",1],["يتكرر، أو ألاحظ أنه يتجنب اللعب معهم بسبب ذلك",2]],
+     b:[["لا، أبداً",0],["مرة أو مرتين",1],["يتكرر، أو ألاحظ أنه يتجنب الذهاب بسبب أحد",2]]}},
+ {ax:"screen", t:{a:"عندما تطلب منه أن يترك الجوال أو الآيباد؟",b:"عندما تطلب منه أن يترك الجوال أو الآيباد؟",c:"عندما تطلب منه أن يترك الجوال أو الألعاب الإلكترونية؟"},
+  o:[["يتركه دون مشكلة",0],["يطلب دقائق إضافية ثم يتركه",1],["يغضب أو يبكي ويصعب إبعاده عنه",2]]},
+ {ax:"conf", t:"عندما يواجه شيئاً صعباً لأول مرة (السباحة، الدراجة، لعبة جديدة)؟",
+  o:[["يحاول أكثر من مرة حتى ينجح",0],["يحاول، وإذا لم ينجح يحتاج تشجيعاً ليكمل",1],["يقول «ما أقدر» ويرفض المحاولة",2]]},
+ {ax:"energy", t:"في الإجازة، إذا لم يكن هناك نشاط بدني (لعب في الخارج أو رياضة)؟",
+  o:[["يشغل نفسه بأشياء هادئة",0],["يمل ويبحث عن شيء يفعله",1],["تزيد عصبيته وحركته في البيت بشكل واضح",2]]},
+ {ax:"anger", t:"عندما يختلف مع أخيه أو صديقه؟",
+  o:[["يتفاهم معه أو يشتكي لك بهدوء",0],["يرفع صوته، لكن الموضوع لا يتطور",1],["يشتكي لك أولاً، وإذا لم تُحل المشكلة يضرب",1],["يضرب أو يدفع مباشرة",2]]},
+ {ax:"focus", t:{a:"عندما يلعب أو يبني شيئاً (مكعبات، رسم)؟",b:"عندما يلعب أو يبني شيئاً (مكعبات، رسم)؟",c:"عندما يعمل على شيء يحبه (هواية، مشروع، لعبة)؟"},
+  o:[["يستمر فترة طويلة وهو مستمتع",0],["يتنقل بين أكثر من لعبة",1],["لا يكمل أي شيء أكثر من دقائق",2]]},
+ {ax:"bully", t:"إذا سخر منه أحد أو قال له كلمة جارحة؟",
+  o:[["يرد بثقة أو لا يتأثر كثيراً",0],["ينزعج ويحكي لك لاحقاً",1],["ينسحب ويبقى متأثراً لفترة طويلة",2]]},
+ {ax:"screen", t:"إذا لم يكن الجوال أو الآيباد متاحاً يوماً كاملاً؟",
+  o:[["يجد شيئاً آخر يفعله بسهولة",0],["يسأل عنه كثيراً لكنه يتأقلم",1],["يتضايق جداً ولا يعرف كيف يشغل نفسه",2]]},
+ {ax:null, t:"هل مارس {n} رياضة منظمة من قبل؟",
+  o:[["لا، لم يمارس من قبل",0],["نعم، ولا يزال يمارسها",0],["نعم، لكنه توقف",0]]}
+];
+
+const TYPES = {
+ anger:{name:"صاحب الإرادة",color:"#C8102E",soft:"#fbe9ec",
+  tag:"قوي، لا يستسلم بسهولة، ويعرف ماذا يريد.",
+  who:"{n} طفل له رأي واضح ويدافع عنه بكل قوته. عندما يريد شيئاً يصر عليه، وعندما يخسر يتأثر بعمق. هذه الحدة التي تتعبك أحياناً هي نفسها الطاقة التي تصنع شخصاً لا يتراجع أمام التحديات.",
+  str:["إصرار واضح، ولا يترك الشيء بسهولة","شجاعة في التعبير عن رأيه","حماس قوي عندما يقتنع بشيء"],
+  work:"{n} يحتاج أن يتعلم كيف يتحكم في انفعاله بدل أن يتحكم فيه انفعاله. في عمر {age} يشعر الطفل بمشاعره بقوة، لكن مهارة تنظيمها لم تكتمل بعد، فتظهر على شكل صراخ أو عناد أو ضرب. هذا طبيعي في هذا العمر، لكنه يحتاج توجيهاً من الآن قبل أن يتحول إلى عادة.",
+  pot:"كثير من الأطفال بهذه الشخصية، عندما يتعلمون توجيه إرادتهم، يصبحون قادة يُعتمد عليهم: يتحملون الضغط، ويكملون ما بدأوه، ويعرفون متى يقولون «لا».",
+  steps:["سمِّ له مشاعره وقت الهدوء: «كنت زعلان لأنك خسرت، صح؟». الطفل الذي يعرف اسم شعوره يتحكم فيه بسهولة أكبر.","اتفقوا على خطة للغضب: يبتعد، يتنفس 5 مرات، ثم يتكلم. وتدربوا عليها وهو هادئ.","تدريب الدفاع عن النفس في مجموعة مع مدرب يعلّم الطفل ضبط النفس واحترام مدربه وزملائه، فالقوة فيه لها قواعد، والخسارة جزء طبيعي من التدريب. وهذه قيم تنتقل معه إلى حياته اليومية."]},
+ energy:{name:"الشعلة",color:"#E8701A",soft:"#fdf0e6",
+  tag:"طاقة لا تنتهي، وحماس لكل شيء.",
+  who:"{n} طفل حركي بطبعه. يحب أن يجرب ويركض ويكتشف، ويصعب عليه الجلوس طويلاً في مكان واحد. هذه الطاقة ليست مشكلة بحد ذاتها، بل وقود يحتاج مكاناً صحيحاً يخرج فيه.",
+  str:["نشاط وحيوية عالية","فضول وحب للتجربة","سرعة في تعلم المهارات الحركية"],
+  work:"{n} يحتاج قناة منظمة لطاقته. في عمر {age} يحتاج الجسم حركة يومية حقيقية، وعندما لا يجدها تظهر على شكل حركة زائدة في البيت أو صعوبة في النوم أو عصبية. المطلوب ليس إطفاء هذه الطاقة، بل توجيهها.",
+  pot:"الأطفال بهذه الطاقة، عندما تنتظم، يتميز كثير منهم في الرياضة، ويصبحون أشخاصاً مبادرين يحبون الإنجاز ويحركون من حولهم.",
+  steps:[{a:"خصص له وقت حركة يومياً ثابتاً، ولو 30 دقيقة من اللعب في الخارج، قبل الأنشطة الهادئة.",b:"خصص له وقت حركة يومياً ثابتاً قبل المذاكرة، ولو 30 دقيقة من اللعب في الخارج."},"قسّم المهام الطويلة إلى أجزاء قصيرة، وبينها استراحة حركة.","تدريب الدفاع عن النفس مع مدرب يرفع لياقة الطفل ويعطيه تفريغاً حقيقياً لطاقته في بيئة منظمة، يتعلم فيها الانضباط واحترام دوره، فيعود إلى البيت أهدأ."]},
+ conf:{name:"المراقب الذكي",color:"#1F5FAD",soft:"#e8f0fa",
+  tag:"يفكر قبل أن يتحرك، ويلاحظ ما لا يلاحظه غيره.",
+  who:"{n} طفل هادئ ومتأمل. يحب أن يفهم الموقف قبل أن يدخل فيه، ولا يندفع نحو أي شيء جديد بسرعة. كثير من الأهالي يرون هذا خجلاً، لكنه في الأصل عقل يحب أن يحسب خطواته.",
+  str:["ملاحظة دقيقة وانتباه للتفاصيل","تفكير قبل التصرف","حساسية واحترام لمشاعر الآخرين"],
+  work:{a:"{n} يحتاج أن يبني ثقته بنفسه ويعبّر عنها. في عمر {age} يبني الطفل صورته عن نفسه من ردود فعل من حوله، والطفل المتأمل قد يفسر تردده على أنه «ما أقدر». كل تجربة نجاح صغيرة في هذا العمر تصنع فرقاً كبيراً.",
+        b:"{n} يحتاج أن يبني ثقته بنفسه ويعبّر عنها. في عمر {age} يبدأ الطفل بمقارنة نفسه بغيره في المدرسة، والطفل المتأمل قد يفسر تردده على أنه «ما أقدر». كل تجربة نجاح صغيرة في هذا العمر تصنع فرقاً كبيراً."},
+  pot:"الأطفال بهذه الشخصية، عندما تُبنى ثقتهم، يصبح كثير منهم قادة هادئين: قراراتهم محسوبة، ويستمعون قبل أن يتكلموا، ويثق الناس في رأيهم.",
+  steps:["امدح المحاولة لا النتيجة: «أعجبني أنك جربت» تبني ثقة أكثر من «أنت ذكي».","أعطه أدواراً صغيرة فيها كلام ومسؤولية، مثل أن يطلب طلبه بنفسه في المطعم.","تدريب الدفاع عن النفس في مجموعة يعطي الطفل المتأمل تشجيعاً مستمراً من مدربه، وأصدقاء جدداً يشاركونه التدريب، وإنجازاً يراه بعينه مع كل مستوى ينتقل إليه، فتكبر ثقته خطوة بخطوة."]},
+ bully:{name:"صاحب القلب الطيب",color:"#2E8B57",soft:"#e9f5ee",
+  tag:"حنون، يشعر بمن حوله، والجميع يرتاح معه.",
+  who:"{n} طفل طيب القلب، يهتم بمشاعر غيره ولا يحب المشاكل، ويفضّل أن يتنازل على أن يدخل في خلاف. هذه صفة جميلة، لكنها تحتاج أن تكون معها قدرة على حماية نفسه.",
+  str:["تعاطف وإحساس عالٍ بالآخرين","لطف يجعل الناس يحبونه","ميل إلى التعاون بدل الصراع"],
+  work:"{n} يحتاج أن يتعلم كيف يضع حدوداً ويدافع عن نفسه بثقة. الأطفال الطيبون في عمر {age} أكثر عرضة لأن يستغل غيرهم طيبتهم، لأنهم لا يردون. المطلوب ليس أن يصبح عدوانياً، بل أن يعرف كيف يقول «لا» بثقة ويطلب المساعدة عندما يحتاجها.",
+  pot:"الأطفال بهذه الشخصية، عندما يتعلمون حماية حدودهم، يصبح كثير منهم الشخص الذي يثق به الجميع: قوي وطيب في الوقت نفسه، يدافع عن نفسه وعن غيره.",
+  steps:["تدربوا في البيت على جمل قصيرة يقولها بصوت واضح: «لا، هذا لي» أو «توقف، لا يعجبني هذا».","اسأله كل يوم بهدوء عن يومه ومع من لعب، واستمع دون أن تحكم، حتى يتعود أن يحكي لك أولاً بأول.","تدريب الدفاع عن النفس مع مدرب يعطي الطفل الطيب ثقة داخلية تظهر في وقفته ونظرته، ويكوّن فيه صداقات مع أطفال يشاركونه القيم نفسها. وغالباً هذه الثقة وحدها تبعد المتنمرين."]},
+ focus:{name:"الحالم المبدع",color:"#6B3FA0",soft:"#f1ebf8",
+  tag:"خياله واسع، وأفكاره مختلفة.",
+  who:"{n} طفل لا يتوقف عقله، ينتقل من فكرة إلى أخرى، ويعيش في عالمه الخاص أحياناً. هذا الخيال ميزة كبيرة، لكن الشاشات والمشتتات الكثيرة قد تسحب انتباهه بعيداً عما يحتاجه.",
+  str:["خيال وإبداع واضح","أفكار جديدة وطريقة تفكير مختلفة","حب للاكتشاف والقصص"],
+  work:{a:"{n} يحتاج أن يقوّي تركيزه ويقلل وقت الشاشة. في عمر {age} يبني الدماغ قدرته على الانتباه، والشاشات السريعة تعوّده على التحفيز المستمر، فتصبح الأنشطة الهادئة أصعب عليه. الخبر الجيد أن التركيز مهارة يمكن تدريبها.",
+        b:"{n} يحتاج أن يقوّي تركيزه ويقلل وقت الشاشة. في عمر {age} يبني الدماغ قدرته على الانتباه، والشاشات السريعة تعوّده على التحفيز المستمر، فتصبح المذاكرة والأنشطة الهادئة أصعب عليه. الخبر الجيد أن التركيز مهارة يمكن تدريبها."},
+  pot:"الأطفال بهذا الخيال، عندما يتعلمون التركيز، يصبح كثير منهم مبدعين ومبتكرين: لديهم الأفكار، ولديهم القدرة على تنفيذها.",
+  steps:["حددوا أوقاتاً واضحة للشاشة، واجعلوا وقت الأكل وآخر ساعة قبل النوم بلا أجهزة.","ابدأ بمهام قصيرة يستطيع إكمالها، وزِد المدة تدريجياً مع كل نجاح.","تدريب الدفاع عن النفس في مجموعة يدرّب الطفل على الانتباه واتباع التعليمات بطريقة ممتعة، ويعطيه بديلاً حقيقياً عن الشاشة: حركة، وأصدقاء حقيقيون، ومدرب يشجعه."]},
+ balanced:{name:"المتوازن",color:"#B8892B",soft:"#f8f1e3",
+  tag:"توازن واضح بين جوانب شخصيته.",
+  who:"{n} طفل متوازن بشكل واضح. يتعامل مع المواقف المختلفة بهدوء، ويعرف كيف يندمج ويركز ويتحكم في نفسه أغلب الوقت. هذا أساس ممتاز تبني عليه.",
+  str:["ثقة جيدة في المواقف الجديدة","تحكم جيد في انفعاله","قدرة على التكيف"],
+  work:"{n} يحتاج تحديات جديدة تساعده على النمو. الطفل المتوازن قد يتوقف عند مستواه إذا لم يجد ما يحفزه، وعمر {age} من أفضل الأوقات لبناء مهارات جديدة وعادات قوية تكبر معه.",
+  pot:"الأطفال المتوازنون، عندما يجدون التحدي المناسب، يتميز كثير منهم في أي مجال يختارونه، لأن لديهم الأساس الذي يحتاجه التميز.",
+  steps:["أعطه أهدافاً صغيرة واضحة يعمل عليها، واحتفلوا معاً عندما يحققها.","شجعه على تجربة أنشطة جديدة خارج منطقة راحته.","تدريب الدفاع عن النفس فيه مستويات وتحديات مستمرة، ومدرب يشجعه، وأصدقاء يتنافس ويتعاون معهم، وهذا يعطي الطفل المتوازن هدفاً يعمل عليه ويحافظ على توازنه."]}
+};
+const SECOND = {
+ conf:"يظهر عند {n} تردد في المواقف الجديدة. التشجيع على المحاولة، حتى لو لم ينجح، يصنع معه فرقاً كبيراً.",
+ anger:"انفعال {n} يرتفع بسرعة في مواقف الخسارة والرفض. تسمية مشاعره وقت الهدوء تساعده على التحكم فيها.",
+ bully:"{n} يحتاج أن يتعلم الدفاع عن حقه بثقة، وأن يتعود أن يحكي لك عندما يضايقه أحد.",
+ screen:"وقت الشاشة عند {n} أعلى من المناسب لعمره. تقليله تدريجياً يحسّن نومه وتركيزه.",
+ energy:"طاقة {n} الحركية عالية، ويحتاج وقت حركة يومياً ثابتاً.",
+ focus:"تركيز {n} يتشتت بسرعة، والمهام القصيرة المتتابعة تناسبه أكثر من الطويلة."
+};
+const PRIORITY = ["bully","conf","anger","energy","focus","screen"];
+
+let name="سلطان", band="a", i=0, ans=new Array(Q.length).fill(null);
+const $=s=>document.querySelector(s);
+const pickB=v=>(v&&typeof v==="object"&&!Array.isArray(v))?(v[band]??v.b):v;
+const fill=t=>pickB(t).replaceAll("{n}",name).replaceAll("{age}",ageText(ageNum));
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+$("#start").onclick=()=>{
+  // Arabic/Persian digits -> Latin, any decimal mark -> ".", then take the first number (e.g. "3 سنوات و6 شهور" -> 3)
+  const raw=($("#ag").value||"")
+    .replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d))
+    .replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d))
+    .replace(/[٫،,]/g,".");
+  const m=raw.match(/\d+(\.\d+)?/);
+  const n=m?Math.floor(parseFloat(m[0])):0;
+  if(!n||n<1||n>17){ $("#agErr").classList.remove("hidden"); $("#ag").focus(); return; }
+  $("#agErr").classList.add("hidden");
+  ageNum=n; band = n<=5 ? "a" : n<=9 ? "b" : "c";
+  name=esc(($("#nm").value||"").trim()||"بطلك");
+  $("#intro").classList.add("hidden"); $("#quiz").classList.remove("hidden");
+  i=0; ans.fill(null); render(); window.scrollTo(0,0);
+};
+$("#back").onclick=()=>{ if(i>0){i--;render();} };
+
+function render(){
+  const q=Q[i], opts=pickB(q.o);
+  $("#count").textContent= i<Q.length-1 ? `سؤال ${i+1} من ${Q.length-1}` : "سؤال أخير";
+  $("#prog").style.width=(i/Q.length*100)+"%";
+  $("#back").disabled=i===0;
+  $("#qbox").innerHTML=`<div class="fade"><p class="q">${fill(q.t)}</p>${opts.map((o,k)=>`<button class="opt${ans[i]===k?" sel":""}" data-k="${k}">${o[0]}</button>`).join("")}</div>`;
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    ans[i]=+b.dataset.k; b.classList.add("sel");
+    setTimeout(()=>{ if(i<Q.length-1){i++;render();} else finish(); },220);
+  });
+}
+
+function finish(){
+  const s={conf:0,anger:0,bully:0,screen:0,energy:0,focus:0};
+  Q.forEach((q,k)=>{ if(q.ax) s[q.ax]+=pickB(q.o)[ans[k]][1]; });
+  const sport=pickB(Q[Q.length-1].o)[ans[Q.length-1]][0];
+  const ranked=[...PRIORITY].sort((a,b)=>s[b]-s[a]||PRIORITY.indexOf(a)-PRIORITY.indexOf(b));
+  const top=ranked[0], second=ranked[1];
+  const typeKey = s[top]<=2 ? "balanced" : (top==="screen"?"focus":top);
+  const T=TYPES[typeKey];
+  document.documentElement.style.setProperty("--accent",T.color);
+  document.documentElement.style.setProperty("--accent-soft",T.soft);
+  const secTxt = (typeKey!=="balanced" && s[second]>=3) ? `<div class="sec"><h2>وننتبه أيضاً إلى</h2><p>${fill(SECOND[second])}</p></div>` : "";
+  const level=v=>v<=2?"جيد":v<=4?"متوسط":"يحتاج اهتمام";
+  $("#quiz").classList.add("hidden");
+  const r=$("#result"); r.classList.remove("hidden");
+  r.innerHTML=`
+   <div class="hero fade"><small>نتيجة اختبار شخصية البطل، من خبراء انفكتوس فايتر</small><h1>${name}: البطل ${T.name}</h1><p>${T.tag}</p></div>
+   <div class="sec"><h2>من هو ${name}؟</h2><p>${fill(T.who)}</p></div>
+   <div class="sec"><h2>نقاط قوته</h2><ul>${T.str.map(x=>`<li>${x}</li>`).join("")}</ul></div>
+   <div class="sec"><h2>الجانب الذي يحتاج اهتمامك</h2><p>${fill(T.work)}</p></div>
+   ${secTxt}
+   <div class="sec"><h2>إذا وُجّه بالشكل الصحيح</h2><p>${fill(T.pot)}</p></div>
+   <div class="sec"><h2>خطوات تساعد ${name}</h2><ol>${T.steps.map(x=>`<li>${fill(x)}</li>`).join("")}</ol></div>
+   <p class="note">تقييم توعوي من إعداد خبراء انفكتوس فايتر، ولا يغني عن استشارة مختص.</p>
+   <button class="btn ghost" id="again">أعد الاختبار</button>
+   <div class="staff">
+     <div style="margin-bottom:6px;color:var(--muted);font-size:12.5px">للمراجعة فقط: ما يراه الموظف في الـ CRM (لا يظهر لولي الأمر)</div>
+     <div class="row"><b>النمط</b><span class="chip">${T.name}</span></div>
+     <div class="row"><b>العمر والنسخة</b><span>${ageText(ageNum)} · نسخة ${band==="a"?"3-5":band==="b"?"6-9":"10+"}</span></div>
+     <div class="row"><b>رياضة سابقة</b><span>${sport}</span></div>
+     <div class="row"><b>أعلى محور</b><span>${AX[top]} (${s[top]} من 6)</span></div>
+     ${s.bully>=5?`<div class="row"><b>تنبيه</b><span class="flag">تنمر مرتفع، تعامل بحساسية</span></div>`:""}
+     ${Object.keys(AX).map(k=>`<div class="row"><span>${AX[k]}</span><span>${s[k]} من 6 · ${level(s[k])}</span></div>`).join("")}
+     <div style="margin-top:6px;color:var(--muted);font-size:12px">0 إلى 2 جيد · 3 إلى 4 متوسط · 5 إلى 6 يحتاج اهتمام</div>
+   </div>`;
+  $("#again").onclick=()=>{ r.classList.add("hidden"); $("#intro").classList.remove("hidden");
+    document.documentElement.style.setProperty("--accent","#C8102E"); document.documentElement.style.setProperty("--accent-soft","#fbe9ec"); window.scrollTo(0,0); };
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
