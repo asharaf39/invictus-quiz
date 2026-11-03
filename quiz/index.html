@@ -33,6 +33,11 @@
   .chip{display:inline-block;padding:1px 10px;border-radius:99px;color:#fff;background:var(--accent);font-size:13px}
   .flag{color:#b42318;font-weight:600}
   .center{text-align:center;padding-top:40px}
+  #cardOverlay{position:fixed;inset:0;background:rgba(20,20,22,.72);display:flex;align-items:center;justify-content:center;padding:18px;z-index:50}
+  #cardOverlay .ov-box{background:#fff;border-radius:18px;padding:14px;max-width:420px;width:100%;text-align:center;max-height:94vh;overflow:auto}
+  #cardOverlay img{width:100%;height:auto;border-radius:12px;display:block;-webkit-touch-callout:default}
+  #cardOverlay p{margin:12px 0 0;font-size:14.5px;color:var(--muted)}
+  #cardOverlay .btn{margin-top:10px}
   #intro>h1,#intro>.lead,#intro,#noLead,.q,.hero,.note,.actions .toast{text-align:center}
   #intro .card{text-align:right}
   .meta{justify-content:center}
@@ -315,6 +320,8 @@ function renderResult(r){
    ${DEMO?'<button class="btn ghost" id="again">أعد الاختبار</button>':""}
    ${staff}`;
   $("#saveImg").onclick=saveImage;
+  $("#hideName").onchange=()=>prepareCard();
+  card={blob:null,url:"",hide:null,busy:null}; prepareCard();
   $("#shareQuiz").onclick=shareQuiz;
   if($("#again")) $("#again").onclick=()=>{ setAccent("#C8102E","#fbe9ec"); only("intro"); };
   only("result");
@@ -366,19 +373,33 @@ async function makeCard(hide){
 function roundRect(x,a,b,w,h,r){ x.beginPath(); x.moveTo(a+r,b); x.arcTo(a+w,b,a+w,b+h,r); x.arcTo(a+w,b+h,a,b+h,r); x.arcTo(a,b+h,a,b,r); x.arcTo(a,b,a+w,b,r); x.closePath(); }
 function shade(hex,p){ const n=parseInt(hex.slice(1),16); let R=n>>16,G=n>>8&255,B=n&255; const f=v=>Math.max(0,Math.min(255,Math.round(v+v*p/100)));
   return "#"+[f(R),f(G),f(B)].map(v=>v.toString(16).padStart(2,"0")).join(""); }
+// The image is prepared before the tap: phones only allow the share sheet right after a tap,
+// so nothing slow may run between the tap and navigator.share().
+let card={blob:null,url:"",hide:null,busy:null};
+function prepareCard(){
+  const hide=$("#hideName").checked;
+  if(card.hide===hide&&(card.blob||card.busy)) return card.busy||Promise.resolve();
+  card.hide=hide; card.blob=null;
+  card.busy=makeCard(hide).then(b=>{ if(card.hide===hide){ if(card.url) URL.revokeObjectURL(card.url); card.blob=b; card.url=URL.createObjectURL(b);} card.busy=null; });
+  return card.busy;
+}
+function showCardOverlay(){
+  let o=$("#cardOverlay");
+  if(!o){ o=document.createElement("div"); o.id="cardOverlay"; document.body.appendChild(o);
+    o.addEventListener("click",e=>{ if(e.target===o||e.target.id==="closeCard") o.remove(); }); }
+  o.innerHTML=`<div class="ov-box"><img src="${card.url}" alt="نتيجة اختبار شخصية البطل">
+    <p>اضغط مطولاً على الصورة واختر «حفظ الصورة».</p>
+    <a class="btn" href="${card.url}" download="invictus-hero.png">تحميل الصورة</a>
+    <button class="btn ghost" id="closeCard" type="button">إغلاق</button></div>`;
+}
 async function saveImage(){
-  const b=$("#saveImg"); b.disabled=true; toast("");
-  try{
-    const blob=await makeCard($("#hideName").checked);
-    const file=new File([blob],"invictus-hero.png",{type:"image/png"});
-    if(navigator.canShare&&navigator.canShare({files:[file]})){
-      try{ await navigator.share({files:[file],title:"نتيجة اختبار شخصية البطل"}); }catch(e){ if(!(e&&e.name==="AbortError")) throw e; }
-    } else {
-      const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="invictus-hero.png"; document.body.appendChild(a); a.click(); a.remove();
-      toast("حفظنا الصورة في جهازك.");
-    }
-  }catch(e){ toast("ما قدرنا نحفظ الصورة، جرّب مرة ثانية."); }
-  b.disabled=false;
+  toast("");
+  if(!card.blob){ $("#saveImg").disabled=true; try{ await prepareCard(); }catch(e){} $("#saveImg").disabled=false;
+    if(!card.blob){ toast("ما قدرنا نجهز الصورة، جرّب مرة ثانية."); return; } showCardOverlay(); return; }
+  const file=new File([card.blob],"invictus-hero.png",{type:"image/png"});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    navigator.share({files:[file],title:"نتيجة اختبار شخصية البطل"}).catch(e=>{ if(!(e&&e.name==="AbortError")) showCardOverlay(); });
+  } else showCardOverlay();
 }
 
 init();
