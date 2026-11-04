@@ -207,6 +207,7 @@ $("#back").onclick=()=>{const s=slides[cur].dataset.s,step=STEPS.indexOf(s); sho
 function riyadhNow(){const p=new Intl.DateTimeFormat("en-US",{timeZone:"Asia/Riyadh",weekday:"short",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date());
   const g=t=>p.find(x=>x.type===t).value; const days={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
   return {day:days[g("weekday")],min:(+g("hour")%24)*60+ +g("minute")};}
+function refHost(){try{const h=document.referrer?new URL(document.referrer).hostname:"";return h&&h!==location.hostname?" ← "+h:"";}catch(e){return "";}}
 function contactMessage(){
   const {day,min}=riyadhNow(), H=(window.IF_CONFIG&&IF_CONFIG.hours)||{open:"14:30",close:"21:30",closedDay:5};
   const toMin=s=>{const [h,m]=s.split(":");return h*60+ +m;}; const o=toMin(H.open), c=toMin(H.close);
@@ -231,7 +232,7 @@ $("#submit").onclick=async()=>{
   if(!data.parent||!data.phone) return;
   sending=true; const b=$("#submit"); b.disabled=true; b.innerHTML='<span class="spin"></span>';
   const payload={action:"register",childName:data.childName,parent:data.parent,phone:data.phone,age:data.age,goal:data.goal,branch:data.branch,
-    source: shared ? PAGE.sourceShared : PAGE.source, campaign:qs.get("utm_campaign")||"", ad:qs.get("utm_content")||qs.get("utm_ad")||"", ref:qs.get("ref")||"", page:location.pathname};
+    source: shared ? PAGE.sourceShared : PAGE.source, campaign:qs.get("utm_campaign")||"", ad:qs.get("utm_content")||qs.get("utm_ad")||"", ref:qs.get("ref")||"", page:location.pathname+refHost()};
   let res=null;
   for(let a=0;a<2&&!(res&&res.ok);a++){ try{res=await post(payload);}catch(e){res=null; await new Promise(r=>setTimeout(r,800));} }
   sending=false; b.disabled=false; b.textContent="سجّل البطل";
