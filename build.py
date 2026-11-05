@@ -12,6 +12,11 @@ TEMPLATE = (ROOT / "src" / "form.html").read_text(encoding="utf-8")
 
 SHARED_SOURCE = "مشاركة من الاختبار"
 
+# Only the home page (/) may appear in search results: invictus-ksa.info redirects to it.
+# The ad pages stay hidden so organic visitors are not counted as ad leads.
+ROBOTS_INDEX = '<meta name="robots" content="index, follow">\n<meta name="description" content="سجّل طفلك في حصة تجريبية مجانية في انفكتوس فايتر للدفاع عن النفس للأطفال في الرياض: فروع الوادي والياسمين والقيروان.">\n<link rel="canonical" href="https://join.invictus-ksa.info/">'
+ROBOTS_NOINDEX = '<meta name="robots" content="noindex, nofollow">'
+
 PAGES = {
     # output folder: settings
     "":       {"source": "زيارة مباشرة", "snap": "", "meta": "", "gtag": ""},
@@ -57,7 +62,8 @@ for folder, cfg in PAGES.items():
             .replace("{{SOURCE}}", cfg["source"])
             .replace("{{SOURCE_SHARED}}", SHARED_SOURCE)
             .replace("{{PIXEL_HEAD}}", pixel_head(cfg))
-            .replace("{{PIXEL_FNS}}", pixel_fns(cfg)))
+            .replace("{{PIXEL_FNS}}", pixel_fns(cfg))
+            .replace("{{ROBOTS}}", ROBOTS_INDEX if folder == "" else ROBOTS_NOINDEX))
     out_dir = ROOT / folder if folder else ROOT
     out_dir.mkdir(exist_ok=True)
     (out_dir / "index.html").write_text(bust(html), encoding="utf-8")
