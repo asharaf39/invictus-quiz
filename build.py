@@ -63,6 +63,7 @@ for folder, cfg in PAGES.items():
             .replace("{{SOURCE_SHARED}}", SHARED_SOURCE)
             .replace("{{PIXEL_HEAD}}", pixel_head(cfg))
             .replace("{{PIXEL_FNS}}", pixel_fns(cfg))
+            .replace("{{STEP1}}", "وصلت لصفحتنا" if folder == "" else "دخلت الإعلان")
             .replace("{{ROBOTS}}", ROBOTS_INDEX if folder == "" else ROBOTS_NOINDEX))
     out_dir = ROOT / folder if folder else ROOT
     out_dir.mkdir(exist_ok=True)
