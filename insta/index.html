@@ -35,6 +35,9 @@
   .nextbox .contact{text-wrap:pretty}
   .quizcta{margin-top:22px;border:1px solid var(--line);background:#fff;border-radius:16px;padding:18px}
   .quizcta h2{font-size:19px;line-height:1.5}
+  .offer{display:none;margin:-8px 0 16px;border-radius:14px;background:var(--red);color:#fff;padding:12px 14px;text-align:center;font-size:15px;line-height:1.6;text-wrap:balance}
+  .offer b{display:block;font-size:16.5px}
+  .offer.on{display:block}
   /* centered text blocks; options, inputs and the journey list stay right-aligned */
   [data-s=welcome]>h1,[data-s=welcome]>.lead,.heroes,.gift,.q,.sub,.thanks h1,.contact,.hours,.quizcta{text-align:center}
   [data-s=contact] label.f{text-align:center}
@@ -49,6 +52,8 @@
 <body>
 <div class="wrap">
   <div class="brand" id="brand"><img src="/assets/emblem.png?v=ccf49ac8" alt="">انفكتوس فايتر</div>
+
+  <div class="offer" id="offer"><b>عرض الجمعة البيضاء: خصم 20% والبدلة علينا</b>سجّل الآن، العرض حتى 25 نوفمبر</div>
 
   <div class="top hidden" id="topbar"><button class="back" id="back" type="button">السابق</button><span id="count"></span></div>
   <div class="bar hidden" id="barwrap"><div id="prog"></div></div>
@@ -158,6 +163,10 @@ const data={branch:"",childName:"",age:0,goal:"",parent:"",phone:""};
 const qs=new URLSearchParams(location.search);
 const shared = qs.get("ref")==="share";
 let cur=0, sending=false;
+
+// White Friday banner: only for visitors from the white-friday ad sets, until 25 Nov 2026 23:59 Riyadh.
+const OFFER={campaignPrefix:"white-friday", until:Date.parse("2026-11-25T23:59:59+03:00")};
+if((qs.get("utm_campaign")||"").startsWith(OFFER.campaignPrefix) && Date.now()<=OFFER.until) $("#offer").classList.add("on");
 
 const digits=s=>String(s||"").replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d));
 function parseAge(v){const m=digits(v).replace(/[٫،,]/g,".").match(/\d+(\.\d+)?/);const n=m?Math.floor(parseFloat(m[0])):0;return n>=1&&n<=17?n:0;}
