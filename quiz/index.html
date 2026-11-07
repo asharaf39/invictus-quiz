@@ -38,8 +38,9 @@
   #cardOverlay img{width:100%;height:auto;border-radius:12px;display:block;-webkit-touch-callout:default}
   #cardOverlay p{margin:12px 0 0;font-size:14.5px;color:var(--muted)}
   #cardOverlay .btn{margin-top:10px}
-  #intro>h1,#intro>.lead,#intro,#noLead,.q,.hero,.note,.actions .toast{text-align:center}
+  #intro>h1,#intro>.lead,#intro,#gpick>h1,#gpick,#noLead,.q,.hero,.note,.actions .toast{text-align:center}
   #intro .card{text-align:right}
+  #intro .card .btn,#gpick .card .btn{margin-top:10px}
   .meta{justify-content:center}
   .q,.hero h1,.hero p,#intro>.lead,#noLead .lead{text-wrap:balance}
   .check{justify-content:center}
@@ -73,7 +74,19 @@
         <div id="agErr" class="err hidden" role="alert">اكتب عمر البطل بالأرقام، مثل 5 أو 3.5</div>
       </div>
       <div class="meta"><span>أقل من 4 دقائق</span><span>18 سؤالاً</span><span>مجاني</span></div>
-      <button class="btn" id="start" type="button">ابدأ الاختبار</button>
+      <button class="btn" id="startBoy" type="button">بطلي ولد</button>
+      <button class="btn" id="startGirl" type="button">بطلتي بنت</button>
+    </div>
+  </section>
+
+  <!-- gender pick: shown for direct entry from the thank-you screen (go=1), which skips the intro -->
+  <section id="gpick" class="hidden">
+    <h1 id="gpickTitle">اكتشف شخصية بطلك</h1>
+    <p class="by">من إعداد <strong class="xp">خبراء انفكتوس فايتر</strong></p>
+    <div class="card">
+      <p class="q" style="min-height:auto">قبل ما نبدأ:</p>
+      <button class="btn" id="goBoy" type="button">بطلي ولد</button>
+      <button class="btn" id="goGirl" type="button">بطلتي بنت</button>
     </div>
   </section>
 
@@ -195,6 +208,142 @@ const SECOND = {
 };
 const PRIORITY = ["bully","conf","anger","energy","focus","screen"];
 
+// النسخة المؤنثة من نصوص الاختبار (للبنات). نفس ترتيب ومحاور ونقاط quiz-data.js بالضبط، الكلام فقط مؤنث.
+// مسودة للمراجعة، غير مستخدمة في الموقع بعد.
+const Q_F = [
+ {ax:"conf", t:{a:"في مكان جديد فيه أطفال لا تعرفهم (حفلة أو تجمع عائلي)، كيف تتصرف {n} غالباً؟",b:"في مكان جديد فيه أطفال لا تعرفهم (حفلة أو تجمع عائلي)، كيف تتصرف {n} غالباً؟",c:"في مكان جديد فيه بنات في عمرها لا تعرفهن (نادٍ أو تجمع)، كيف تتصرف {n} غالباً؟"},
+  o:[["تندمج وتبدأ اللعب معهم خلال دقائق",0],["تراقب قليلاً ثم تشارك إذا دعاها أحد",1],["تبقى بجانبك وترفض المشاركة",2]]},
+ {ax:"energy", t:{a:"في نهاية يوم طويل، كيف تكون طاقة {n}؟",b:"بعد يوم دراسي طويل، كيف تكون طاقة {n}؟"},
+  o:[["تهدأ وترتاح بسهولة",0],["تحتاج وقت لعب حر لتفرغ طاقتها",1],["طاقتها عالية جداً ويصعب تهدئتها حتى وقت النوم",2]]},
+ {ax:"anger", t:"عندما تخسر في لعبة أو مسابقة؟",
+  o:[["تتقبل الخسارة وتطلب أن تلعب مرة أخرى",0],["تزعل أو تغضب، لكنها ترجع وتحاول من جديد",1],["تزعل وتترك اللعب",1],["تغضب بقوة: تبكي أو ترمي الأشياء",2]]},
+ {ax:"focus", t:{a:"عندما تجلس على نشاط هادئ (تلوين، تركيب قطع، قصة)؟",b:"عندما تذاكر أو تحل واجبها؟"},
+  o:{a:[["تكمله حتى تنتهي",0],["تحتاج تشجيعاً لتكمل",1],["تتركه بعد دقيقة أو دقيقتين",2]],
+     b:[["تكمل حتى تنتهي دون تذكير كثير",0],["تحتاج تذكيراً من وقت لآخر لترجع للواجب",1],["تتشتت بسرعة ويصعب عليها الإكمال حتى لو كان الواجب قصيراً",2]]}},
+ {ax:"bully", t:{a:"إذا أخذ طفل لعبتها منها بالقوة؟",b:"إذا أخذ طفل لعبتها منها بالقوة؟",c:"إذا أخذ أحد أغراضها أو تعدّى على دورها بالقوة؟"},
+  o:[["تطالب بها بثقة أو تطلب مساعدة شخص كبير",0],["ترد بالضرب مباشرة",1],["تسكت أو تبكي وتتركها",2]]},
+ {ax:"screen", t:"كم ساعة تقريباً تقضي {n} على الجوال أو الآيباد أو التلفزيون في اليوم العادي؟",
+  o:{a:[["أقل من ساعة",0],["من ساعة إلى ساعتين",1],["أكثر من ساعتين",2]],
+     b:[["أقل من ساعة",0],["من ساعة إلى 3 ساعات",1],["أكثر من 3 ساعات",2]],
+     c:[["أقل من ساعتين",0],["من ساعتين إلى 4 ساعات",1],["أكثر من 4 ساعات",2]]}},
+ {ax:"conf", t:{a:"إذا طُلب منها أن تقول اسمها أو تجيب عن سؤال أمام مجموعة من الناس؟",b:"إذا طلبت منها المعلمة أن تقف وتتحدث أمام الفصل؟",c:"إذا طُلب منها أن تقدم عرضاً أو تتحدث أمام الفصل؟"},
+  o:[["تتحمس وتتحدث بثقة",0],["تتحدث لكن بصوت منخفض أو بتردد",1],["ترفض أو تتوتر كثيراً",2]]},
+ {ax:"energy", t:"في مكان يحتاج جلوساً وهدوءاً (مطعم، زيارة، مسجد)؟",
+  o:[["تجلس بهدوء أغلب الوقت",0],["تجلس قليلاً ثم تبدأ بالحركة",1],["لا تستطيع الجلوس، وتتحرك طوال الوقت",2]]},
+ {ax:"anger", t:"عندما ترفض لها طلباً (لعبة، وقت إضافي على الجوال)؟",
+  o:[["تتقبل حتى لو كانت منزعجة",0],["تجادل وتُلح لفترة",1],["تصرخ أو تعاند بشدة",2]]},
+ {ax:"focus", t:{a:"عندما تعطيها تعليمة من خطوتين (البسي حذاءك وتعالي عند الباب)؟",b:"عندما تعطيها تعليمات من خطوتين أو ثلاث (البسي حذاءك، أحضري حقيبتك، وانتظريني عند الباب)؟",c:"عندما تطلب منها أكثر من مهمة (رتّبي غرفتك، جهّزي حقيبتك، ثم ذاكري)؟"},
+  o:[["تنفذها كاملة",0],["تنفذ جزءاً وتنسى الباقي",1],["تنشغل بشيء آخر قبل أن تبدأ",2]]},
+ {ax:"bully", t:{a:"هل لاحظت أن أطفالاً آخرين يضايقونها أو يأخذون أغراضها في الحضانة أو في التجمعات؟",b:"هل اشتكت {n} من أن أحداً يضايقها أو يسخر منها في المدرسة أو النادي؟",c:"هل اشتكت {n} من أن أحداً يضايقها أو يسخر منها في المدرسة أو النادي أو في الألعاب الإلكترونية؟"},
+  o:{a:[["لا، أبداً",0],["مرة أو مرتين",1],["يتكرر، أو ألاحظ أنها تتجنب اللعب معهم بسبب ذلك",2]],
+     b:[["لا، أبداً",0],["مرة أو مرتين",1],["يتكرر، أو ألاحظ أنها تتجنب الذهاب بسبب أحد",2]]}},
+ {ax:"screen", t:{a:"عندما تطلب منها أن تترك الجوال أو الآيباد؟",b:"عندما تطلب منها أن تترك الجوال أو الآيباد؟",c:"عندما تطلب منها أن تترك الجوال أو الألعاب الإلكترونية؟"},
+  o:[["تتركه دون مشكلة",0],["تطلب دقائق إضافية ثم تتركه",1],["تغضب أو تبكي ويصعب إبعادها عنه",2]]},
+ {ax:"conf", t:"عندما تواجه شيئاً صعباً لأول مرة (السباحة، الدراجة، لعبة جديدة)؟",
+  o:[["تحاول أكثر من مرة حتى تنجح",0],["تحاول، وإذا لم تنجح تحتاج تشجيعاً لتكمل",1],["تقول «ما أقدر» وترفض المحاولة",2]]},
+ {ax:"energy", t:"في الإجازة، إذا لم يكن هناك نشاط بدني (لعب في الخارج أو رياضة)؟",
+  o:[["تشغل نفسها بأشياء هادئة",0],["تمل وتبحث عن شيء تفعله",1],["تزيد عصبيتها وحركتها في البيت بشكل واضح",2]]},
+ {ax:"anger", t:"عندما تختلف مع أختها أو أخيها أو صديقتها؟",
+  o:[["تتفاهم معها أو معه، أو تشتكي لك بهدوء",0],["ترفع صوتها، لكن الموضوع لا يتطور",1],["تشتكي لك أولاً، وإذا لم تُحل المشكلة تضرب",1],["تضرب أو تدفع مباشرة",2]]},
+ {ax:"focus", t:{a:"عندما تلعب أو تبني شيئاً (مكعبات، رسم)؟",b:"عندما تلعب أو تبني شيئاً (مكعبات، رسم)؟",c:"عندما تعمل على شيء تحبه (هواية، مشروع، لعبة)؟"},
+  o:[["تستمر فترة طويلة وهي مستمتعة",0],["تتنقل بين أكثر من لعبة",1],["لا تكمل أي شيء أكثر من دقائق",2]]},
+ {ax:"bully", t:"إذا سخر منها أحد أو قال لها كلمة جارحة؟",
+  o:[["ترد بثقة أو لا تتأثر كثيراً",0],["تنزعج وتحكي لك لاحقاً",1],["تنسحب وتبقى متأثرة لفترة طويلة",2]]},
+ {ax:"screen", t:"إذا لم يكن الجوال أو الآيباد متاحاً يوماً كاملاً؟",
+  o:[["تجد شيئاً آخر تفعله بسهولة",0],["تسأل عنه كثيراً لكنها تتأقلم",1],["تتضايق جداً ولا تعرف كيف تشغل نفسها",2]]},
+ {ax:null, t:"هل مارست {n} رياضة منظمة من قبل؟",
+  o:[["لا، لم تمارس من قبل",0],["نعم، ولا تزال تمارسها",0],["نعم، لكنها توقفت",0]]}
+];
+
+const TYPES_F = {
+ anger:{name:"صاحبة الإرادة",
+  tag:"قوية، لا تستسلم بسهولة، وتعرف ماذا تريد.",
+  who:"{n} طفلة لها رأي واضح وتدافع عنه بكل قوتها. عندما تريد شيئاً تصر عليه، وعندما تخسر تتأثر بعمق. هذه الحدة التي تتعبك أحياناً هي نفسها الطاقة التي تصنع شخصية لا تتراجع أمام التحديات.",
+  str:["إصرار واضح، ولا تترك الشيء بسهولة","شجاعة في التعبير عن رأيها","حماس قوي عندما تقتنع بشيء"],
+  work:"{n} تحتاج أن تتعلم كيف تتحكم في انفعالها بدل أن يتحكم فيها انفعالها. في عمر {age} تشعر الطفلة بمشاعرها بقوة، لكن مهارة تنظيمها لم تكتمل بعد، فتظهر على شكل صراخ أو عناد أو ضرب. هذا طبيعي في هذا العمر، لكنه يحتاج توجيهاً من الآن قبل أن يتحول إلى عادة.",
+  pot:"كثير من البنات بهذه الشخصية، عندما يتعلمن توجيه إرادتهن، يصبحن قائدات يُعتمد عليهن: يتحملن الضغط، ويكملن ما بدأنه، ويعرفن متى يقلن «لا».",
+  steps:["سمِّ لها مشاعرها وقت الهدوء: «كنتِ زعلانة لأنكِ خسرتِ، صح؟». الطفلة التي تعرف اسم شعورها تتحكم فيه بسهولة أكبر.","اتفقوا على خطة للغضب: تبتعد، تتنفس 5 مرات، ثم تتكلم. وتدربوا عليها وهي هادئة.","تدريب الدفاع عن النفس في مجموعة مع مدرب يعلّم الطفلة ضبط النفس واحترام مدربها وزملائها، فالقوة فيه لها قواعد، والخسارة جزء طبيعي من التدريب. وهذه قيم تنتقل معها إلى حياتها اليومية."]},
+ energy:{name:"الشعلة",
+  tag:"طاقة لا تنتهي، وحماس لكل شيء.",
+  who:"{n} طفلة حركية بطبعها. تحب أن تجرب وتركض وتكتشف، ويصعب عليها الجلوس طويلاً في مكان واحد. هذه الطاقة ليست مشكلة بحد ذاتها، بل وقود يحتاج مكاناً صحيحاً يخرج فيه.",
+  str:["نشاط وحيوية عالية","فضول وحب للتجربة","سرعة في تعلم المهارات الحركية"],
+  work:"{n} تحتاج قناة منظمة لطاقتها. في عمر {age} يحتاج الجسم حركة يومية حقيقية، وعندما لا تجدها تظهر على شكل حركة زائدة في البيت أو صعوبة في النوم أو عصبية. المطلوب ليس إطفاء هذه الطاقة، بل توجيهها.",
+  pot:"البنات بهذه الطاقة، عندما تنتظم، تتميز كثيرات منهن في الرياضة، ويصبحن مبادرات يحببن الإنجاز ويحركن من حولهن.",
+  steps:[{a:"خصص لها وقت حركة يومياً ثابتاً، ولو 30 دقيقة من اللعب في الخارج، قبل الأنشطة الهادئة.",b:"خصص لها وقت حركة يومياً ثابتاً قبل المذاكرة، ولو 30 دقيقة من اللعب في الخارج."},"قسّم المهام الطويلة إلى أجزاء قصيرة، وبينها استراحة حركة.","تدريب الدفاع عن النفس مع مدرب يرفع لياقة الطفلة ويعطيها تفريغاً حقيقياً لطاقتها في بيئة منظمة، تتعلم فيها الانضباط واحترام دورها، فتعود إلى البيت أهدأ."]},
+ conf:{name:"المراقبة الذكية",
+  tag:"تفكر قبل أن تتحرك، وتلاحظ ما لا يلاحظه غيرها.",
+  who:"{n} طفلة هادئة ومتأملة. تحب أن تفهم الموقف قبل أن تدخل فيه، ولا تندفع نحو أي شيء جديد بسرعة. كثير من الأهالي يرون هذا خجلاً، لكنه في الأصل عقل يحب أن يحسب خطواته.",
+  str:["ملاحظة دقيقة وانتباه للتفاصيل","تفكير قبل التصرف","حساسية واحترام لمشاعر الآخرين"],
+  work:{a:"{n} تحتاج أن تبني ثقتها بنفسها وتعبّر عنها. في عمر {age} تبني الطفلة صورتها عن نفسها من ردود فعل من حولها، والطفلة المتأملة قد تفسر ترددها على أنه «ما أقدر». كل تجربة نجاح صغيرة في هذا العمر تصنع فرقاً كبيراً.",
+        b:"{n} تحتاج أن تبني ثقتها بنفسها وتعبّر عنها. في عمر {age} تبدأ الطفلة بمقارنة نفسها بغيرها في المدرسة، والطفلة المتأملة قد تفسر ترددها على أنه «ما أقدر». كل تجربة نجاح صغيرة في هذا العمر تصنع فرقاً كبيراً."},
+  pot:"البنات بهذه الشخصية، عندما تُبنى ثقتهن، تصبح كثيرات منهن قائدات هادئات: قراراتهن محسوبة، ويستمعن قبل أن يتكلمن، ويثق الناس في رأيهن.",
+  steps:["امدح المحاولة لا النتيجة: «أعجبني أنكِ جربتِ» تبني ثقة أكثر من «أنتِ ذكية».","أعطها أدواراً صغيرة فيها كلام ومسؤولية، مثل أن تطلب طلبها بنفسها في المطعم.","تدريب الدفاع عن النفس في مجموعة يعطي الطفلة المتأملة تشجيعاً مستمراً من مدربها، وأصدقاء جدداً يشاركونها التدريب، وإنجازاً تراه بعينها مع كل مستوى تنتقل إليه، فتكبر ثقتها خطوة بخطوة."]},
+ bully:{name:"صاحبة القلب الطيب",
+  tag:"حنونة، تشعر بمن حولها، والجميع يرتاح معها.",
+  who:"{n} طفلة طيبة القلب، تهتم بمشاعر غيرها ولا تحب المشاكل، وتفضّل أن تتنازل على أن تدخل في خلاف. هذه صفة جميلة، لكنها تحتاج أن تكون معها قدرة على حماية نفسها.",
+  str:["تعاطف وإحساس عالٍ بالآخرين","لطف يجعل الناس يحبونها","ميل إلى التعاون بدل الصراع"],
+  work:"{n} تحتاج أن تتعلم كيف تضع حدوداً وتدافع عن نفسها بثقة. البنات الطيبات في عمر {age} أكثر عرضة لأن يستغل غيرهن طيبتهن، لأنهن لا يرددن. المطلوب ليس أن تصبح عدوانية، بل أن تعرف كيف تقول «لا» بثقة وتطلب المساعدة عندما تحتاجها.",
+  pot:"البنات بهذه الشخصية، عندما يتعلمن حماية حدودهن، تصبح كثيرات منهن الشخص الذي يثق به الجميع: قوية وطيبة في الوقت نفسه، تدافع عن نفسها وعن غيرها.",
+  steps:["تدربوا في البيت على جمل قصيرة تقولها بصوت واضح: «لا، هذا لي» أو «توقف، لا يعجبني هذا».","اسألها كل يوم بهدوء عن يومها ومع من لعبت، واستمع دون أن تحكم، حتى تتعود أن تحكي لك أولاً بأول.","تدريب الدفاع عن النفس مع مدرب يعطي الطفلة الطيبة ثقة داخلية تظهر في وقفتها ونظرتها، ويكوّن لها صداقات مع أطفال يشاركونها القيم نفسها. وغالباً هذه الثقة وحدها تبعد المتنمرين."]},
+ focus:{name:"الحالمة المبدعة",
+  tag:"خيالها واسع، وأفكارها مختلفة.",
+  who:"{n} طفلة لا يتوقف عقلها، تنتقل من فكرة إلى أخرى، وتعيش في عالمها الخاص أحياناً. هذا الخيال ميزة كبيرة، لكن الشاشات والمشتتات الكثيرة قد تسحب انتباهها بعيداً عما تحتاجه.",
+  str:["خيال وإبداع واضح","أفكار جديدة وطريقة تفكير مختلفة","حب للاكتشاف والقصص"],
+  work:{a:"{n} تحتاج أن تقوّي تركيزها وتقلل وقت الشاشة. في عمر {age} يبني الدماغ قدرته على الانتباه، والشاشات السريعة تعوّده على التحفيز المستمر، فتصبح الأنشطة الهادئة أصعب عليها. الخبر الجيد أن التركيز مهارة يمكن تدريبها.",
+        b:"{n} تحتاج أن تقوّي تركيزها وتقلل وقت الشاشة. في عمر {age} يبني الدماغ قدرته على الانتباه، والشاشات السريعة تعوّده على التحفيز المستمر، فتصبح المذاكرة والأنشطة الهادئة أصعب عليها. الخبر الجيد أن التركيز مهارة يمكن تدريبها."},
+  pot:"البنات بهذا الخيال، عندما يتعلمن التركيز، تصبح كثيرات منهن مبدعات ومبتكرات: لديهن الأفكار، ولديهن القدرة على تنفيذها.",
+  steps:["حددوا أوقاتاً واضحة للشاشة، واجعلوا وقت الأكل وآخر ساعة قبل النوم بلا أجهزة.","ابدأ بمهام قصيرة تستطيع إكمالها، وزِد المدة تدريجياً مع كل نجاح.","تدريب الدفاع عن النفس في مجموعة يدرّب الطفلة على الانتباه واتباع التعليمات بطريقة ممتعة، ويعطيها بديلاً حقيقياً عن الشاشة: حركة، وأصدقاء حقيقيون، ومدرب يشجعها."]},
+ balanced:{name:"المتوازنة",
+  tag:"توازن واضح بين جوانب شخصيتها.",
+  who:"{n} طفلة متوازنة بشكل واضح. تتعامل مع المواقف المختلفة بهدوء، وتعرف كيف تندمج وتركز وتتحكم في نفسها أغلب الوقت. هذا أساس ممتاز تبني عليه.",
+  str:["ثقة جيدة في المواقف الجديدة","تحكم جيد في انفعالها","قدرة على التكيف"],
+  work:"{n} تحتاج تحديات جديدة تساعدها على النمو. الطفلة المتوازنة قد تتوقف عند مستواها إذا لم تجد ما يحفزها، وعمر {age} من أفضل الأوقات لبناء مهارات جديدة وعادات قوية تكبر معها.",
+  pot:"البنات المتوازنات، عندما يجدن التحدي المناسب، تتميز كثيرات منهن في أي مجال يخترنه، لأن لديهن الأساس الذي يحتاجه التميز.",
+  steps:["أعطها أهدافاً صغيرة واضحة تعمل عليها، واحتفلوا معاً عندما تحققها.","شجعها على تجربة أنشطة جديدة خارج منطقة راحتها.","تدريب الدفاع عن النفس فيه مستويات وتحديات مستمرة، ومدرب يشجعها، وأصدقاء تتنافس وتتعاون معهم، وهذا يعطي الطفلة المتوازنة هدفاً تعمل عليه ويحافظ على توازنها."]}
+};
+
+const SECOND_F = {
+ conf:"يظهر عند {n} تردد في المواقف الجديدة. التشجيع على المحاولة، حتى لو لم تنجح، يصنع معها فرقاً كبيراً.",
+ anger:"انفعال {n} يرتفع بسرعة في مواقف الخسارة والرفض. تسمية مشاعرها وقت الهدوء تساعدها على التحكم فيها.",
+ bully:"{n} تحتاج أن تتعلم الدفاع عن حقها بثقة، وأن تتعود أن تحكي لك عندما يضايقها أحد.",
+ screen:"وقت الشاشة عند {n} أعلى من المناسب لعمرها. تقليله تدريجياً يحسّن نومها وتركيزها.",
+ energy:"طاقة {n} الحركية عالية، وتحتاج وقت حركة يومياً ثابتاً.",
+ focus:"تركيز {n} يتشتت بسرعة، والمهام القصيرة المتتابعة تناسبها أكثر من الطويلة."
+};
+
+// العناوين الثابتة في صفحة النتيجة وصورة المشاركة
+const LABELS_F = {
+ heroWord:"البطلة",            // «{n}: البطلة الشعلة» بدل «البطل الشعلة»
+ who:"من هي {n}؟",             // بدل «من هو»
+ strengths:"نقاط قوتها",        // بدل «نقاط قوته»
+ work:"الجانب الذي يحتاج اهتمامك",
+ pot:"إذا وُجّهت بالشكل الصحيح", // بدل «إذا وُجّه»
+ steps:"خطوات تساعد {n}",
+ hideName:"إخفاء اسم البطلة في الصورة",
+ resultSmall:"نتيجة اختبار شخصية البطلة",   // سطر أعلى النتيجة وصورة المشاركة
+ hiddenName:"بطلتي",                        // بدل «بطلي» عند إخفاء الاسم في الصورة
+ discover:"اكتشف شخصية بطلتك مجاناً",        // أسفل صورة المشاركة
+ introLead:"18 سؤالاً سريعاً عن مواقف من يوم طفلتك، تظهر بعدها نتيجة توضح نقاط قوتها، والجانب الذي يحتاج اهتمامك، وخطوات عملية تبدأ بها من اليوم."
+};
+
+// ---------- gender (نسخة الأولاد / نسخة البنات) ----------
+// "m" = ولد (النصوص الأصلية)، "f" = بنت (Q_F / TYPES_F / SECOND_F / LABELS_F من quiz-data-f.js).
+// الحساب والنتيجة لا يتغيران بالجنس: نفس المحاور والنقاط، يتغير الكلام والرسمة فقط.
+const LABELS_M={heroWord:"البطل",who:"من هو {n}؟",strengths:"نقاط قوته",work:"الجانب الذي يحتاج اهتمامك",pot:"إذا وُجّه بالشكل الصحيح",steps:"خطوات تساعد {n}",hideName:"إخفاء اسم البطل في الصورة",resultSmall:"نتيجة اختبار شخصية البطل",hiddenName:"بطلي",discover:"اكتشف شخصية بطلك مجاناً"};
+// تسمية ملفات الرسومات (متفق عليها مع المصمم): assets/heroes/<نمط>_<boy|girl>_<small|mid|big>.png
+const HERO_FILE={anger:"will",energy:"flame",conf:"observer",bully:"heart",focus:"dreamer",balanced:"balanced"};
+const BAND_FILE={a:"small",b:"mid",c:"big"};
+let gender="m", QD=Q, TD=TYPES, SD=SECOND, LB=LABELS_M;
+function setGender(g){
+  gender=(g==="f")?"f":"m";
+  if(gender==="f"&&typeof Q_F!=="undefined"){
+    QD=Q_F; SD=SECOND_F; LB=Object.assign({},LABELS_M,LABELS_F);
+    TD={}; for(const k in TYPES) TD[k]=Object.assign({},TYPES[k],TYPES_F[k]); // الألوان من النسخة الأصلية دائماً
+  } else { QD=Q; TD=TYPES; SD=SECOND; LB=LABELS_M; }
+}
+const heroArt=t=>`/assets/heroes/${HERO_FILE[t]||"balanced"}_${gender==="f"?"girl":"boy"}_${BAND_FILE[band]||"mid"}.png`;
+const lbl=k=>LB[k].replaceAll("{n}",name);
+// ----------------------------------------------------------
 let name="بطلك", band="a", i=0, ans=new Array(Q.length).fill(null);
 const $=s=>document.querySelector(s);
 const pickB=v=>(v&&typeof v==="object"&&!Array.isArray(v))?(v[band]??v.b):v;
@@ -209,7 +358,7 @@ const DEMO=!EP||token==="demo";
 const SHARE_URL=location.origin+"/?ref=share";
 let lastResult=null;
 
-function only(id){["loading","noLead","intro","quiz","result"].forEach(x=>$("#"+x).classList.toggle("hidden",x!==id));window.scrollTo(0,0);}
+function only(id){["loading","noLead","intro","gpick","quiz","result"].forEach(x=>$("#"+x).classList.toggle("hidden",x!==id));window.scrollTo(0,0);}
 function setAccent(c,s){document.documentElement.style.setProperty("--accent",c);document.documentElement.style.setProperty("--accent-soft",s);}
 
 async function api(method,payload){
@@ -220,7 +369,7 @@ async function api(method,payload){
 async function init(){
   if(DEMO){
     const qn=(QS.get("n")||"").trim(), qa=parseInt(QS.get("a"),10);
-    if(qn&&qa>=1&&qa<=17){ name=esc(qn); ageNum=qa; band=bandOf(qa); if(GO){ startQuiz(); return; } $("#introTitle").textContent=`اكتشف شخصية ${qn}`; demoPrefilled=true; only("intro"); return; }
+    if(qn&&qa>=1&&qa<=17){ name=esc(qn); ageNum=qa; band=bandOf(qa); if(GO){ showGpick(); return; } $("#introTitle").textContent=`اكتشف شخصية ${qn}`; demoPrefilled=true; only("intro"); return; }
     $("#demoFields").classList.remove("hidden"); only("intro"); return;
   }
   if(!/^[a-f0-9]{12}$/.test(token)){ only("noLead"); return; }
@@ -229,69 +378,75 @@ async function init(){
   if(!lead||!lead.ok){ only("noLead"); return; }
   name=esc(lead.name||"بطلك"); ageNum=lead.age||5; band=bandOf(ageNum);
   if(lead.done&&lead.result){ renderResult(lead.result); return; }
-  if(GO){ startQuiz(); return; }
+  if(GO){ showGpick(); return; }
   $("#introTitle").textContent=`اكتشف شخصية ${lead.name||"بطلك"}`;
   only("intro");
 }
 
 let demoPrefilled=false;
 function startQuiz(){ i=0; ans.fill(null); only("quiz"); render(); }
-$("#start").onclick=()=>{
-  if(DEMO&&!demoPrefilled){
+function showGpick(){ $("#gpickTitle").textContent=`اكتشف شخصية ${name}`; only("gpick"); }
+function startFrom(g){
+  if(DEMO&&!demoPrefilled&&!$("#demoFields").classList.contains("hidden")){
     const raw=($("#ag").value||"").replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٫،,]/g,".");
     const m=raw.match(/\d+(\.\d+)?/); const n=m?Math.floor(parseFloat(m[0])):0;
     if(!n||n<1||n>17){ $("#agErr").classList.remove("hidden"); return; }
     $("#agErr").classList.add("hidden"); ageNum=n; band=bandOf(n); name=esc(($("#nm").value||"").trim()||"بطلك");
   }
-  startQuiz();
-};
+  setGender(g); startQuiz();
+}
+$("#startBoy").onclick=()=>startFrom("m");
+$("#startGirl").onclick=()=>startFrom("f");
+$("#goBoy").onclick=()=>{ setGender("m"); startQuiz(); };
+$("#goGirl").onclick=()=>{ setGender("f"); startQuiz(); };
 $("#back").onclick=()=>{ if(i>0){i--;render();} };
 
 function render(){
-  const q=Q[i], opts=pickB(q.o);
-  $("#count").textContent= i<Q.length-1 ? `سؤال ${i+1} من ${Q.length-1}` : "سؤال أخير";
-  $("#prog").style.width=(i/Q.length*100)+"%";
+  const q=QD[i], opts=pickB(q.o);
+  $("#count").textContent= i<QD.length-1 ? `سؤال ${i+1} من ${QD.length-1}` : "سؤال أخير";
+  $("#prog").style.width=(i/QD.length*100)+"%";
   $("#back").disabled=i===0;
   $("#qbox").innerHTML=`<div class="fade"><p class="q">${fill(q.t)}</p>${opts.map((o,k)=>`<button class="opt${ans[i]===k?" sel":""}" data-k="${k}">${o[0]}</button>`).join("")}</div>`;
   document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
     ans[i]=+b.dataset.k; b.classList.add("sel");
     if(i===5||i===11) save(false);
-    setTimeout(()=>{ if(i<Q.length-1){i++;render();} else finish(); },220);
+    setTimeout(()=>{ if(i<QD.length-1){i++;render();} else finish(); },220);
   });
 }
 
 function compute(){
   const s={conf:0,anger:0,bully:0,screen:0,energy:0,focus:0};
-  Q.forEach((q,k)=>{ if(q.ax&&ans[k]!=null) s[q.ax]+=pickB(q.o)[ans[k]][1]; });
+  QD.forEach((q,k)=>{ if(q.ax&&ans[k]!=null) s[q.ax]+=pickB(q.o)[ans[k]][1]; });
   const ranked=[...PRIORITY].sort((a,b)=>s[b]-s[a]||PRIORITY.indexOf(a)-PRIORITY.indexOf(b));
   const top=ranked[0], second=ranked[1];
   const type = s[top]<=2 ? "balanced" : (top==="screen"?"focus":top);
-  const last=Q[Q.length-1], sport = ans[Q.length-1]!=null ? pickB(last.o)[ans[Q.length-1]][0] : "";
-  return {name, age:ageNum, type, top, second, scores:s, sport};
+  const last=QD[QD.length-1], sport = ans[QD.length-1]!=null ? pickB(last.o)[ans[QD.length-1]][0] : "";
+  return {name, age:ageNum, g:gender, type, top, second, scores:s, sport};
 }
 
 let saving=Promise.resolve();
 function save(done){
   if(DEMO) return Promise.resolve();
   const r=compute();
-  const payload={action:"saveQuiz",t:token,done,answers:ans,scores:r.scores,type:r.type,top:r.top,second:r.second,sport:r.sport};
+  const payload={action:"saveQuiz",t:token,done,answers:ans,scores:r.scores,type:r.type,top:r.top,second:r.second,sport:r.sport,g:r.g};
   saving=saving.then(async()=>{ for(let a=0;a<3;a++){ try{ const x=await api("POST",payload); if(x&&x.ok) return x; }catch(e){} await new Promise(r=>setTimeout(r,1200)); } });
   return saving;
 }
 window.addEventListener("pagehide",()=>{
   if(DEMO||!$("#result").classList.contains("hidden")||ans.every(a=>a==null)) return;
   const r=compute();
-  try{ navigator.sendBeacon(EP,new Blob([JSON.stringify({action:"saveQuiz",t:token,done:false,answers:ans,scores:r.scores,type:r.type,top:r.top,second:r.second,sport:r.sport})],{type:"text/plain"})); }catch(e){}
+  try{ navigator.sendBeacon(EP,new Blob([JSON.stringify({action:"saveQuiz",t:token,done:false,answers:ans,scores:r.scores,type:r.type,top:r.top,second:r.second,sport:r.sport,g:r.g})],{type:"text/plain"})); }catch(e){}
 });
 
 function finish(){ const r=compute(); save(true); renderResult(r); }
 
 function renderResult(r){
   lastResult=r;
+  if(r.g) setGender(r.g); // نتيجة محفوظة: استرجاع جنس النسخة (القديمة بدون g تبقى بالمذكر)
   if(r.name) name=esc(r.name); if(r.age){ ageNum=r.age; band=bandOf(ageNum); }
-  const s=r.scores, T=TYPES[r.type]||TYPES.balanced, top=r.top, second=r.second;
+  const s=r.scores, T=TD[r.type]||TD.balanced, top=r.top, second=r.second;
   setAccent(T.color,T.soft);
-  const secTxt = (r.type!=="balanced" && second && s[second]>=3) ? `<div class="sec"><h2>وننتبه أيضاً إلى</h2><p>${fill(SECOND[second])}</p></div>` : "";
+  const secTxt = (r.type!=="balanced" && second && s[second]>=3) ? `<div class="sec"><h2>وننتبه أيضاً إلى</h2><p>${fill(SD[second])}</p></div>` : "";
   const level=v=>v<=2?"جيد":v<=4?"متوسط":"يحتاج اهتمام";
   const staff = DEMO ? `<div class="staff">
      <div style="margin-bottom:6px;color:var(--muted);font-size:12.5px">نسخة تجريبية: هذا ما يراه الموظف في الـ CRM (لا يظهر لولي الأمر)</div>
@@ -303,16 +458,16 @@ function renderResult(r){
      ${Object.keys(AX).map(k=>`<div class="row"><span>${AX[k]}</span><span>${s[k]} من 6 · ${level(s[k])}</span></div>`).join("")}
    </div>` : "";
   $("#result").innerHTML=`
-   <div class="hero fade"><small>نتيجة اختبار شخصية البطل، من <strong class="xp">خبراء انفكتوس فايتر</strong></small><h1>${name}: البطل ${T.name}</h1><p>${T.tag}</p></div>
-   <div class="sec"><h2>من هو ${name}؟</h2><p>${fill(T.who)}</p></div>
-   <div class="sec"><h2>نقاط قوته</h2><ul>${T.str.map(x=>`<li>${x}</li>`).join("")}</ul></div>
-   <div class="sec"><h2>الجانب الذي يحتاج اهتمامك</h2><p>${fill(T.work)}</p></div>
+   <div class="hero fade"><small>${LB.resultSmall}، من <strong class="xp">خبراء انفكتوس فايتر</strong></small><img src="${heroArt(r.type)}" alt="" style="display:block;margin:4px auto 10px;height:110px" onerror="this.remove()"><h1>${name}: ${LB.heroWord} ${T.name}</h1><p>${T.tag}</p></div>
+   <div class="sec"><h2>${lbl("who")}</h2><p>${fill(T.who)}</p></div>
+   <div class="sec"><h2>${LB.strengths}</h2><ul>${T.str.map(x=>`<li>${x}</li>`).join("")}</ul></div>
+   <div class="sec"><h2>${LB.work}</h2><p>${fill(T.work)}</p></div>
    ${secTxt}
-   <div class="sec"><h2>إذا وُجّه بالشكل الصحيح</h2><p>${fill(T.pot)}</p></div>
-   <div class="sec"><h2>خطوات تساعد ${name}</h2><ol>${T.steps.map(x=>`<li>${fill(x)}</li>`).join("")}</ol></div>
+   <div class="sec"><h2>${LB.pot}</h2><p>${fill(T.pot)}</p></div>
+   <div class="sec"><h2>${lbl("steps")}</h2><ol>${T.steps.map(x=>`<li>${fill(x)}</li>`).join("")}</ol></div>
    <div class="actions">
      <button class="btn" id="saveImg" type="button">احفظ النتيجة كصورة</button>
-     <label class="check"><input type="checkbox" id="hideName"> إخفاء اسم البطل في الصورة</label>
+     <label class="check"><input type="checkbox" id="hideName"> ${LB.hideName}</label>
      <button class="btn soft" id="shareQuiz" type="button">شارك الاختبار مع صديق</button>
      <div class="toast" id="toast" role="status"></div>
    </div>
@@ -323,7 +478,7 @@ function renderResult(r){
   $("#hideName").onchange=()=>prepareCard();
   card={blob:null,url:"",hide:null,busy:null}; prepareCard();
   $("#shareQuiz").onclick=shareQuiz;
-  if($("#again")) $("#again").onclick=()=>{ setAccent("#C8102E","#fbe9ec"); only("intro"); };
+  if($("#again")) $("#again").onclick=()=>{ setAccent("#C8102E","#fbe9ec"); setGender("m"); only("intro"); };
   only("result");
 }
 
@@ -342,7 +497,8 @@ function wrapLines(ctx,text,maxW){ const words=text.split(" "),lines=[]; let lin
   if(line) lines.push(line); return lines; }
 function loadImg(src){ return new Promise(res=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src; }); }
 async function makeCard(hide){
-  const r=lastResult, T=TYPES[r.type]||TYPES.balanced, W=1080,H=1350;
+  // رسمة الشخصية داخل صورة المشاركة: تُضاف في مرحلة التصميم بعد استلام رسومات المصمم (تخطيط الصورة سيتغير معها).
+  const r=lastResult, T=TD[r.type]||TD.balanced, W=1080,H=1350;
   const c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
   try{ await document.fonts.load('700 80px "IBM Plex Sans Arabic"'); await document.fonts.load('400 40px "IBM Plex Sans Arabic"'); }catch(e){}
   const F=(w,s)=>`${w} ${s}px "IBM Plex Sans Arabic", sans-serif`;
@@ -352,13 +508,13 @@ async function makeCard(hide){
   x.fillStyle=g; roundRect(x,60,60,W-120,820,48); x.fill();
   x.fillStyle="rgba(255,255,255,.12)"; x.beginPath(); x.arc(170,820,230,0,Math.PI*2); x.fill();
   x.direction="rtl"; x.textAlign="center"; x.fillStyle="#fff";
-  x.font=F(500,36); x.globalAlpha=.9; x.fillText("نتيجة اختبار شخصية البطل",W/2,170); x.globalAlpha=1;
+  x.font=F(500,36); x.globalAlpha=.9; x.fillText(LB.resultSmall,W/2,170); x.globalAlpha=1;
   x.font=F(700,38); x.fillText("من خبراء انفكتوس فايتر",W/2,225);
   const nm = hide ? "" : r.name;
   x.font=F(700,nm?92:104);
-  const title = nm ? `${nm}` : "بطلي";
+  const title = nm ? `${nm}` : LB.hiddenName;
   x.fillText(title,W/2,nm?390:430);
-  x.font=F(700,nm?84:96); x.fillText(`البطل ${T.name}`,W/2,nm?500:560);
+  x.font=F(700,nm?84:96); x.fillText(`${LB.heroWord} ${T.name}`,W/2,nm?500:560);
   x.font=F(400,42); wrapLines(x,T.tag,W-260).forEach((l,k)=>x.fillText(l,W/2,(nm?620:690)+k*62));
   // footer
   const logo=await loadImg("/assets/emblem.png?v=ccf49ac8");
@@ -367,7 +523,7 @@ async function makeCard(hide){
   if(logo){ const h=86,w=logo.width*h/logo.height, gap=22, total=w+gap+tw, left=W/2-total/2;
     x.textAlign="right"; x.fillText(label,left+tw,1065); x.drawImage(logo,left+tw+gap,1003,w,h); x.textAlign="center"; }
   else x.fillText(label,W/2,1065);
-  x.fillStyle="#1d1d1f"; x.font=F(600,40); x.fillText("اكتشف شخصية بطلك مجاناً",W/2,1180);
+  x.fillStyle="#1d1d1f"; x.font=F(600,40); x.fillText(LB.discover,W/2,1180);
   x.fillStyle="#6b6b70"; x.font=F(400,36); x.direction="ltr"; x.fillText("join.invictus-ksa.info",W/2,1245);
   return new Promise(res=>c.toBlob(res,"image/png"));
 }
@@ -388,7 +544,7 @@ function showCardOverlay(){
   let o=$("#cardOverlay");
   if(!o){ o=document.createElement("div"); o.id="cardOverlay"; document.body.appendChild(o);
     o.addEventListener("click",e=>{ if(e.target===o||e.target.id==="closeCard") o.remove(); }); }
-  o.innerHTML=`<div class="ov-box"><img src="${card.url}" alt="نتيجة اختبار شخصية البطل">
+  o.innerHTML=`<div class="ov-box"><img src="${card.url}" alt="${LB.resultSmall}">
     <p>اضغط مطولاً على الصورة واختر «حفظ الصورة».</p>
     <a class="btn" href="${card.url}" download="invictus-hero.png">تحميل الصورة</a>
     <button class="btn ghost" id="closeCard" type="button">إغلاق</button></div>`;
@@ -399,7 +555,7 @@ async function saveImage(){
     if(!card.blob){ toast("ما قدرنا نجهز الصورة، جرّب مرة ثانية."); return; } showCardOverlay(); return; }
   const file=new File([card.blob],"invictus-hero.png",{type:"image/png"});
   if(navigator.canShare&&navigator.canShare({files:[file]})){
-    navigator.share({files:[file],title:"نتيجة اختبار شخصية البطل"}).catch(e=>{ if(!(e&&e.name==="AbortError")) showCardOverlay(); });
+    navigator.share({files:[file],title:LB.resultSmall}).catch(e=>{ if(!(e&&e.name==="AbortError")) showCardOverlay(); });
   } else showCardOverlay();
 }
 

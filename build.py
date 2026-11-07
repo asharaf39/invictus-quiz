@@ -71,8 +71,9 @@ for folder, cfg in PAGES.items():
     print("built", (folder or "/") , "->", cfg["source"])
 
 # quiz page: src/quiz.html + src/quiz-data.js (questions, types, texts)
-quiz = (ROOT / "src" / "quiz.html").read_text(encoding="utf-8").replace(
-    "{{QUIZ_DATA}}", (ROOT / "src" / "quiz-data.js").read_text(encoding="utf-8"))
+quiz_data = ((ROOT / "src" / "quiz-data.js").read_text(encoding="utf-8")
+             + "\n" + (ROOT / "src" / "quiz-data-f.js").read_text(encoding="utf-8"))
+quiz = (ROOT / "src" / "quiz.html").read_text(encoding="utf-8").replace("{{QUIZ_DATA}}", quiz_data)
 (ROOT / "quiz").mkdir(exist_ok=True)
 (ROOT / "quiz" / "index.html").write_text(bust(quiz), encoding="utf-8")
 print("built /quiz")
