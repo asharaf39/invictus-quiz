@@ -36,7 +36,7 @@ input:focus{outline:2px solid var(--red);outline-offset:1px}
 .opt{display:block;width:100%;text-align:right;font:inherit;font-size:16px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px;cursor:pointer;color:var(--ink);transition:border-color .15s,background .15s}
 .opt small{display:block;color:var(--muted);font-size:13.5px;line-height:1.5;margin-top:2px}
 .opt:hover{border-color:#cfcac4}
-.opt[disabled]{opacity:.5;cursor:not-allowed;background:#f4f2ef}
+.opt[disabled]{opacity:.78;cursor:not-allowed;background:#f4f2ef;color:var(--muted)}
 .opt[disabled]:hover{border-color:var(--line)}
 .opt.sel{border-color:var(--red);background:var(--red-soft)}
 .fade{animation:fade .25s ease}
