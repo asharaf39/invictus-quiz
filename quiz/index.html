@@ -7,7 +7,7 @@
 <title>اختبار شخصية البطل | انفكتوس فايتر</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/base.css?v=91335250">
+<link rel="stylesheet" href="/assets/base.css?v=43878997">
 <style>
   label{display:block;font-weight:600;font-size:14px;margin:16px 0 6px}
   .meta{display:flex;gap:16px;color:var(--muted);font-size:13px;margin-top:14px}
@@ -95,7 +95,7 @@
 
   <!-- quiz -->
   <section id="quiz" class="hidden">
-    <div class="top"><button class="back" id="back" type="button" aria-label="السؤال السابق"><span class="arr" aria-hidden="true">&#8594;</span> السابق</button><span class="forWho" id="forWho"></span><span id="count"></span></div>
+    <div class="top"><button class="back" id="back" type="button" aria-label="السؤال السابق"><span class="arr" aria-hidden="true">&#8594;</span> السابق</button><span id="count"></span></div>
     <div class="bar"><div id="prog"></div></div>
     <div id="qbox"></div>
   </section>
@@ -483,7 +483,7 @@ async function init(){
 }
 
 let demoPrefilled=false;
-function startQuiz(){ i=0; ans.fill(null); $("#forWho").textContent=`مخصص ل${name}، ${ageText(ageNum)}`; only("quiz"); render(); }
+function startQuiz(){ i=0; ans.fill(null); only("quiz"); render(); }
 const whoChip=()=>`<span class="whoName">${name}</span><span class="whoDot">·</span><span class="whoAge">${ageText(ageNum)}</span>`;
 function showGpick(){ $("#gpickTitle").textContent=`اكتشف شخصية ${name}`; $("#gpickWho").innerHTML=whoChip(); $("#gpickName").textContent=name; only("gpick"); }
 function showIntroWho(){ $("#introWho").innerHTML=whoChip(); $("#introWho").classList.remove("hidden"); }
@@ -504,7 +504,7 @@ $("#back").onclick=()=>{ if(i>0){i--;render();} };
 
 function render(){
   const q=QD[i], opts=pickB(q.o);
-  $("#count").textContent= i<QD.length-1 ? `سؤال ${i+1} من ${QD.length-1}` : "سؤال أخير";
+  $("#count").textContent= `أسئلة ${name} · ` + (i<QD.length-1 ? `${i+1} من ${QD.length-1}` : "سؤال أخير");
   $("#prog").style.width=(i/QD.length*100)+"%";
   $("#back").disabled=i===0;
   $("#qbox").innerHTML=`<div class="fade"><p class="q">${fill(q.t)}</p>${opts.map((o,k)=>`<button class="opt${ans[i]===k?" sel":""}" data-k="${k}">${o[0]}</button>`).join("")}</div>`;
