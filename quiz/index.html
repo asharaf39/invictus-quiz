@@ -7,7 +7,7 @@
 <title>اختبار شخصية البطل | انفكتوس فايتر</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/base.css?v=60e283d2">
+<link rel="stylesheet" href="/assets/base.css?v=43878997">
 <style>
   label{display:block;font-weight:600;font-size:14px;margin:16px 0 6px}
   .meta{display:flex;gap:16px;color:var(--muted);font-size:13px;margin-top:14px}
@@ -73,6 +73,7 @@
         <input id="ag" inputmode="decimal" placeholder="مثال: 5" autocomplete="off">
         <div id="agErr" class="err hidden" role="alert">اكتب عمر البطل بالأرقام، مثل 5 أو 3.5</div>
       </div>
+      <div class="who hidden" id="introWho"></div>
       <div class="meta"><span>أقل من 4 دقائق</span><span>18 سؤالاً</span><span>مجاني</span></div>
       <button class="btn" id="startBoy" type="button">بطلي ولد</button>
       <button class="btn" id="startGirl" type="button">بطلتي بنت</button>
@@ -84,7 +85,8 @@
     <h1 id="gpickTitle">اكتشف شخصية بطلك</h1>
     <p class="by">من إعداد <strong class="xp">خبراء انفكتوس فايتر</strong></p>
     <div class="card">
-      <p class="q" style="min-height:auto">قبل ما نبدأ:</p>
+      <div class="who" id="gpickWho"></div>
+      <p class="q" style="min-height:auto">الأسئلة مُعدّة لعمر <b id="gpickAge"></b>، وتختلف للولد عن البنت.<br>قبل ما نبدأ:</p>
       <button class="btn" id="goBoy" type="button">بطلي ولد</button>
       <button class="btn" id="goGirl" type="button">بطلتي بنت</button>
     </div>
@@ -92,7 +94,7 @@
 
   <!-- quiz -->
   <section id="quiz" class="hidden">
-    <div class="top"><button class="back" id="back" type="button">السابق</button><span id="count"></span></div>
+    <div class="top"><button class="back" id="back" type="button" aria-label="السؤال السابق"><span class="arr" aria-hidden="true">&#8594;</span> السابق</button><span id="count"></span></div>
     <div class="bar"><div id="prog"></div></div>
     <div id="qbox"></div>
   </section>
@@ -463,7 +465,7 @@ async function api(method,payload){
 async function init(){
   if(DEMO){
     const qn=(QS.get("n")||"").trim(), qa=parseInt(QS.get("a"),10);
-    if(qn&&qa>=1&&qa<=17){ name=esc(qn); ageNum=qa; band=bandOf(qa); if(GO){ showGpick(); return; } $("#introTitle").textContent=`اكتشف شخصية ${qn}`; demoPrefilled=true; only("intro"); return; }
+    if(qn&&qa>=1&&qa<=17){ name=esc(qn); ageNum=qa; band=bandOf(qa); if(GO){ showGpick(); return; } $("#introTitle").textContent=`اكتشف شخصية ${qn}`; demoPrefilled=true; showIntroWho(); only("intro"); return; }
     $("#demoFields").classList.remove("hidden"); only("intro"); return;
   }
   if(!/^[a-f0-9]{12}$/.test(token)){ only("noLead"); return; }
@@ -474,12 +476,15 @@ async function init(){
   if(lead.done&&lead.result){ renderResult(lead.result); return; }
   if(GO){ showGpick(); return; }
   $("#introTitle").textContent=`اكتشف شخصية ${lead.name||"بطلك"}`;
+  showIntroWho();
   only("intro");
 }
 
 let demoPrefilled=false;
 function startQuiz(){ i=0; ans.fill(null); only("quiz"); render(); }
-function showGpick(){ $("#gpickTitle").textContent=`اكتشف شخصية ${name}`; only("gpick"); }
+const whoChip=()=>`<span class="whoName">${name}</span><span class="whoDot">·</span><span class="whoAge">${ageText(ageNum)}</span>`;
+function showGpick(){ $("#gpickTitle").textContent=`اكتشف شخصية ${name}`; $("#gpickWho").innerHTML=whoChip(); $("#gpickAge").textContent=ageText(ageNum); only("gpick"); }
+function showIntroWho(){ $("#introWho").innerHTML=whoChip(); $("#introWho").classList.remove("hidden"); }
 function startFrom(g){
   if(DEMO&&!demoPrefilled&&!$("#demoFields").classList.contains("hidden")){
     const raw=($("#ag").value||"").replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٫،,]/g,".");
