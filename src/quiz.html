@@ -107,7 +107,7 @@
 // ---------- gender (نسخة الأولاد / نسخة البنات) ----------
 // "m" = ولد (النصوص الأصلية)، "f" = بنت (Q_F / TYPES_F / SECOND_F / LABELS_F من quiz-data-f.js).
 // الحساب والنتيجة لا يتغيران بالجنس: نفس المحاور والنقاط، يتغير الكلام والرسمة فقط.
-const LABELS_M={heroWord:"البطل",who:"من هو {n}؟",strengths:"نقاط قوته",work:"الجانب الذي يحتاج اهتمامك",pot:"إذا وُجّه بالشكل الصحيح",steps:"خطوات تساعد {n}",hideName:"إخفاء اسم البطل في الصورة",resultSmall:"نتيجة اختبار شخصية البطل",hiddenName:"بطلي",discover:"اكتشف شخصية بطلك مجاناً"};
+const LABELS_M={heroWord:"البطل",who:"من هو {n}؟",strengths:"نقاط قوته",work:"الجانب الذي يحتاج اهتمامك",pot:"إذا وُجّه بالشكل الصحيح",steps:"خطوات تساعد {n}",week:"جرّب هذا الأسبوع مع {n}",hideName:"إخفاء اسم البطل في الصورة",resultSmall:"نتيجة اختبار شخصية البطل",hiddenName:"بطلي",discover:"اكتشف شخصية بطلك مجاناً"};
 // تسمية ملفات الرسومات (متفق عليها مع المصمم): assets/heroes/<نمط>_<boy|girl>_<small|mid|big>.png
 const HERO_FILE={anger:"will",energy:"flame",conf:"observer",bully:"heart",focus:"dreamer",balanced:"balanced"};
 const BAND_FILE={a:"small",b:"mid",c:"big"};
@@ -242,7 +242,7 @@ function renderResult(r){
    <div class="sec"><h2>${LB.work}</h2><p>${fill(T.work)}</p></div>
    ${secTxt}
    <div class="sec"><h2>${LB.pot}</h2><p>${fill(T.pot)}</p></div>
-   <div class="sec"><h2>${lbl("steps")}</h2><ol>${T.steps.map(x=>`<li>${fill(x)}</li>`).join("")}</ol></div>
+   <div class="sec"><h2>${T.week?lbl("week"):lbl("steps")}</h2><ol>${(T.week?[...(pickB(T.week)||[]),T.steps[T.steps.length-1]]:T.steps).map(x=>`<li>${fill(x)}</li>`).join("")}</ol></div>
    <div class="actions">
      <button class="btn" id="saveImg" type="button">احفظ النتيجة كصورة</button>
      <label class="check"><input type="checkbox" id="hideName"> ${LB.hideName}</label>
