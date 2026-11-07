@@ -7,7 +7,7 @@
 <title>اختبار شخصية البطل | انفكتوس فايتر</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/base.css?v=43878997">
+<link rel="stylesheet" href="/assets/base.css?v=91335250">
 <style>
   label{display:block;font-weight:600;font-size:14px;margin:16px 0 6px}
   .meta{display:flex;gap:16px;color:var(--muted);font-size:13px;margin-top:14px}
@@ -17,6 +17,7 @@
   .hero small{display:block;opacity:.85;font-size:13px;margin-bottom:6px}
   .hero h1{color:#fff;font-size:27px;margin:0 0 8px}
   .hero p{margin:0;opacity:.95;font-size:16px}
+  .hero .basis{margin:14px auto 0;padding-top:12px;border-top:1px solid rgba(255,255,255,.28);font-size:13px;opacity:.88;max-width:420px}
   .sec{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 8px;margin-bottom:12px}
   .sec h2{display:flex;align-items:center;gap:8px}
   .sec h2:before{content:"";width:4px;height:18px;border-radius:2px;background:var(--accent);display:inline-block}
@@ -94,7 +95,7 @@
 
   <!-- quiz -->
   <section id="quiz" class="hidden">
-    <div class="top"><button class="back" id="back" type="button" aria-label="السؤال السابق"><span class="arr" aria-hidden="true">&#8594;</span> السابق</button><span id="count"></span></div>
+    <div class="top"><button class="back" id="back" type="button" aria-label="السؤال السابق"><span class="arr" aria-hidden="true">&#8594;</span> السابق</button><span class="forWho" id="forWho"></span><span id="count"></span></div>
     <div class="bar"><div id="prog"></div></div>
     <div id="qbox"></div>
   </section>
@@ -419,13 +420,14 @@ const LABELS_F = {
  resultSmall:"نتيجة اختبار شخصية البطلة",   // سطر أعلى النتيجة وصورة المشاركة
  hiddenName:"بطلتي",                        // بدل «بطلي» عند إخفاء الاسم في الصورة
  discover:"اكتشف شخصية بطلتك مجاناً",        // أسفل صورة المشاركة
+ basis:"بُنيت نتيجة {n} على عمرها ({age})، وكونها بنتاً، و18 إجابة منك عن مواقف من يومها.", // سطر أساس النتيجة
  introLead:"18 سؤالاً سريعاً عن مواقف من يوم طفلتك، تظهر بعدها نتيجة توضح نقاط قوتها، والجانب الذي يحتاج اهتمامك، وخطوات عملية تبدأ بها من اليوم."
 };
 
 // ---------- gender (نسخة الأولاد / نسخة البنات) ----------
 // "m" = ولد (النصوص الأصلية)، "f" = بنت (Q_F / TYPES_F / SECOND_F / LABELS_F من quiz-data-f.js).
 // الحساب والنتيجة لا يتغيران بالجنس: نفس المحاور والنقاط، يتغير الكلام والرسمة فقط.
-const LABELS_M={heroWord:"البطل",who:"من هو {n}؟",strengths:"نقاط قوته",work:"الجانب الذي يحتاج اهتمامك",pot:"إذا وُجّه بالشكل الصحيح",steps:"خطوات تساعد {n}",week:"جرّب هذا الأسبوع مع {n}",hideName:"إخفاء اسم البطل في الصورة",resultSmall:"نتيجة اختبار شخصية البطل",hiddenName:"بطلي",discover:"اكتشف شخصية بطلك مجاناً"};
+const LABELS_M={heroWord:"البطل",who:"من هو {n}؟",strengths:"نقاط قوته",work:"الجانب الذي يحتاج اهتمامك",pot:"إذا وُجّه بالشكل الصحيح",steps:"خطوات تساعد {n}",week:"جرّب هذا الأسبوع مع {n}",hideName:"إخفاء اسم البطل في الصورة",resultSmall:"نتيجة اختبار شخصية البطل",hiddenName:"بطلي",discover:"اكتشف شخصية بطلك مجاناً",basis:"بُنيت نتيجة {n} على عمره ({age})، وكونه ولداً، و18 إجابة منك عن مواقف من يومه."};
 // تسمية ملفات الرسومات (متفق عليها مع المصمم): assets/heroes/<نمط>_<boy|girl>_<small|mid|big>.png
 const HERO_FILE={anger:"will",energy:"flame",conf:"observer",bully:"heart",focus:"dreamer",balanced:"balanced"};
 const BAND_FILE={a:"small",b:"mid",c:"big"};
@@ -481,7 +483,7 @@ async function init(){
 }
 
 let demoPrefilled=false;
-function startQuiz(){ i=0; ans.fill(null); only("quiz"); render(); }
+function startQuiz(){ i=0; ans.fill(null); $("#forWho").textContent=`مخصص ل${name}، ${ageText(ageNum)}`; only("quiz"); render(); }
 const whoChip=()=>`<span class="whoName">${name}</span><span class="whoDot">·</span><span class="whoAge">${ageText(ageNum)}</span>`;
 function showGpick(){ $("#gpickTitle").textContent=`اكتشف شخصية ${name}`; $("#gpickWho").innerHTML=whoChip(); $("#gpickAge").textContent=ageText(ageNum); only("gpick"); }
 function showIntroWho(){ $("#introWho").innerHTML=whoChip(); $("#introWho").classList.remove("hidden"); }
@@ -557,7 +559,7 @@ function renderResult(r){
      ${Object.keys(AX).map(k=>`<div class="row"><span>${AX[k]}</span><span>${s[k]} من 6 · ${level(s[k])}</span></div>`).join("")}
    </div>` : "";
   $("#result").innerHTML=`
-   <div class="hero fade"><small>${LB.resultSmall}، من <strong class="xp">خبراء انفكتوس فايتر</strong></small><img src="${heroArt(r.type)}" alt="" style="display:block;margin:4px auto 10px;height:110px" onerror="this.remove()"><h1>${name}: ${LB.heroWord} ${T.name}</h1><p>${T.tag}</p></div>
+   <div class="hero fade"><small>${LB.resultSmall}، من <strong class="xp">خبراء انفكتوس فايتر</strong></small><img src="${heroArt(r.type)}" alt="" style="display:block;margin:4px auto 10px;height:110px" onerror="this.remove()"><h1>${name}: ${LB.heroWord} ${T.name}</h1><p>${T.tag}</p><p class="basis">${fill(LB.basis)}</p></div>
    <div class="sec"><h2>${lbl("who")}</h2><p>${fill(T.who)}</p></div>
    <div class="sec"><h2>${LB.strengths}</h2><ul>${T.str.map(x=>`<li>${x}</li>`).join("")}</ul></div>
    <div class="sec"><h2>${LB.work}</h2><p>${fill(T.work)}</p></div>
