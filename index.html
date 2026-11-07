@@ -9,7 +9,7 @@
 <title>انفكتوس فايتر | سجّل بطلك</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/base.css?v=1ad27a60">
+<link rel="stylesheet" href="/assets/base.css?v=9723059d">
 <style>
   .journey{list-style:none;padding:0;margin:14px 0 0}
   .journey li{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:15.5px}
@@ -91,7 +91,7 @@
     <p class="q">وش اسم بطلنا؟</p>
     <p class="sub">وش ودك المدرب ينادي البطل؟</p>
     <input id="childName" autocomplete="off" placeholder="اكتب اسم البطل" maxlength="40">
-    <div class="err hidden" id="errName">اكتب اسم البطل</div>
+    <div class="err hidden" role="alert" id="errName">اكتب اسم البطل</div>
     <button class="btn" data-next type="button">التالي</button>
   </section>
 
@@ -100,7 +100,7 @@
     <p class="q">كم عمر بطلنا؟</p>
     <p class="sub">معرفة عمر البطل تساعدنا نرشحه للمجموعة الأنسب لفئته العمرية.</p>
     <input id="age" inputmode="decimal" autocomplete="off" placeholder="مثال: 6">
-    <div class="err hidden" id="errAge">اكتب عمر البطل بالأرقام، مثل 5 أو 3.5</div>
+    <div class="err hidden" role="alert" id="errAge">اكتب عمر البطل بالأرقام، مثل 5 أو 3.5</div>
     <button class="btn" data-next type="button">التالي</button>
   </section>
 
@@ -115,12 +115,12 @@
   <section class="slide hidden" data-s="contact">
     <label class="f" for="parent" style="margin-top:0"><span class="q" style="display:block">اسم أبو البطل؟</span><small>علشان يكون معنا اسم البطل الثلاثي وقت الشهادات والتكريم</small></label>
     <input id="parent" autocomplete="off" placeholder="اسم الأب" maxlength="40">
-    <div class="err hidden" id="errParent">اكتب اسم أبو البطل</div>
+    <div class="err hidden" role="alert" id="errParent">اكتب اسم أبو البطل</div>
     <label class="f" for="phone">رقم جوال ولي الأمر<small>بنتصل عليك ونشرح لك تفاصيل أكثر</small></label>
     <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="05xxxxxxxx" dir="ltr" style="text-align:right">
-    <div class="err hidden" id="errPhone">اكتب رقم جوال سعودي صحيح يبدأ بـ 05</div>
+    <div class="err hidden" role="alert" id="errPhone">اكتب رقم جوال سعودي صحيح يبدأ بـ 05</div>
     <button class="btn" id="submit" type="button">سجّل البطل</button>
-    <div class="err hidden" id="errSend">صار خلل بسيط في الاتصال. تأكد من الإنترنت واضغط «سجّل البطل» مرة ثانية.</div>
+    <div class="err hidden" role="alert" id="errSend">صار خلل بسيط في الاتصال. تأكد من الإنترنت واضغط «سجّل البطل» مرة ثانية.</div>
   </section>
 
   <!-- 7 thanks -->

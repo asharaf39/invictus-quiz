@@ -70,7 +70,7 @@
         <input id="nm" value="سلطان" autocomplete="off">
         <label for="ag">عمر البطل (بالسنوات)</label>
         <input id="ag" inputmode="decimal" placeholder="مثال: 5" autocomplete="off">
-        <div id="agErr" class="err hidden">اكتب عمر البطل بالأرقام، مثل 5 أو 3.5</div>
+        <div id="agErr" class="err hidden" role="alert">اكتب عمر البطل بالأرقام، مثل 5 أو 3.5</div>
       </div>
       <div class="meta"><span>أقل من 4 دقائق</span><span>18 سؤالاً</span><span>مجاني</span></div>
       <button class="btn" id="start" type="button">ابدأ الاختبار</button>
@@ -210,7 +210,7 @@ function renderResult(r){
      <button class="btn" id="saveImg" type="button">احفظ النتيجة كصورة</button>
      <label class="check"><input type="checkbox" id="hideName"> إخفاء اسم البطل في الصورة</label>
      <button class="btn soft" id="shareQuiz" type="button">شارك الاختبار مع صديق</button>
-     <div class="toast" id="toast"></div>
+     <div class="toast" id="toast" role="status"></div>
    </div>
    <p class="note">تقييم توعوي من إعداد <strong class="xp">خبراء انفكتوس فايتر</strong>، ولا يغني عن استشارة مختص.</p>
    ${DEMO?'<button class="btn ghost" id="again">أعد الاختبار</button>':""}
