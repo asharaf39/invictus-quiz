@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
-"""Build the private review copy (demo/) from the built pages: self-contained, no backend, no pixels.
+"""Build the private review copy (demo/) from the built pages.
+Looks exactly like the real client journey (Snap ad visitor -> registration -> thank-you -> quiz -> result):
+no banner, no demo fields, no staff box, no retake button. Only differences: no backend (nothing is saved),
+no pixels, and a sessionStorage handoff because the preview host drops query strings.
 Not part of the site. demo/ is git-ignored. Run after build.py."""
 import base64, re
 from pathlib import Path
 ROOT=Path(__file__).parent
 emblem="data:image/png;base64,"+base64.b64encode((ROOT/'assets/emblem.png').read_bytes()).decode()
 css=(ROOT/'assets/base.css').read_text(encoding='utf-8')
-banner='<div style="background:#fff7e6;border:1px solid #e6c98a;border-radius:10px;padding:8px 12px;text-align:center;font-size:13px;color:#7a5b16;margin-bottom:14px">نسخة تجريبية للمراجعة الداخلية — لا تُحفظ أي بيانات ولا تصل لأي نظام</div>'
 def patch(h):
     h=re.sub(r'<link rel="stylesheet" href="/assets/base\.css[^"]*">','<style>'+css.replace('\\','\\\\')+'</style>',h,count=1)
     h=re.sub(r'<script src="/assets/config\.js[^"]*"></script>','<script>window.IF_CONFIG={};</script>',h,count=1)
     h=re.sub(r'/assets/emblem\.png[^"\')]*',emblem,h)
-    return h.replace('<div class="wrap">','<div class="wrap">'+banner,1)
+    return h
 (ROOT/'demo/quiz').mkdir(parents=True,exist_ok=True)
-f=patch((ROOT/'index.html').read_text(encoding='utf-8'))
+# entry = the Snap ad page (most clients arrive from Snap); pixel loads are blocked by the preview host and fail silently
+f=patch((ROOT/'snap/index.html').read_text(encoding='utf-8'))
 f=f.replace('$("#quizBtn").href = res.demo','try{sessionStorage.setItem("ifDemo",JSON.stringify({n:data.childName,a:data.age}));}catch(e){}\n  $("#quizBtn").href = res.demo')
 f=f.replace('"/quiz/?t=demo&go=1&n="','"quiz/index.html?t=demo&go=1&n="')
 (ROOT/'demo/index.html').write_text(f,encoding='utf-8')
@@ -23,5 +26,13 @@ assert old in q, "quiz init block changed; update build-demo.py"
 q=q.replace(old,'''    let qn=(QS.get("n")||"").trim(), qa=parseInt(QS.get("a"),10), qgo=GO;
     if(!qn){ try{ const d=JSON.parse(sessionStorage.getItem("ifDemo")||"null"); if(d&&d.n){ qn=String(d.n).trim(); qa=parseInt(d.a,10); qgo=true; } }catch(e){} }
     if(qn&&qa>=1&&qa<=17){ name=esc(qn); ageNum=qa; band=bandOf(qa); if(qgo){ showGpick(); return; }''')
+# opened without registration data -> the real "not registered" screen, like the live site
+old2='    $("#demoFields").classList.remove("hidden"); only("intro"); return;'
+assert old2 in q; q=q.replace(old2,'    only("noLead"); return;')
+q=q.replace('href="/?ref=share"','href="../index.html?ref=share"')
+# hide demo-only UI so the result reads exactly as the client sees it
+q=q.replace('const staff = DEMO ?','const staff = false ?')
+q,n=re.subn(r'\$\{DEMO\?\'<button class="btn ghost" id="again">[^<]*</button>\':""\}','',q)
+assert n==1, "retake button markup changed"
 (ROOT/'demo/quiz/index.html').write_text(q,encoding='utf-8')
-print("demo built")
+print("demo built (client view)")
