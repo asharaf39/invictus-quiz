@@ -131,7 +131,7 @@
       <div class="nb-txt">
         <div class="nb-h">الخطوة الجاية</div>
         <p class="contact" id="contactMsg"></p>
-        <p class="hours">دوامنا من 2:30 العصر إلى 9:30 مساءً، ما عدا الجمعة.</p>
+        <p class="hours">دوامنا من 2:30 العصر إلى 9 مساءً، ما عدا الجمعة.</p>
       </div>
     </div>
     <div class="quizcta">
@@ -143,7 +143,7 @@
   </section>
 </div>
 
-<script src="/assets/config.js?v=ff308fc0"></script>
+<script src="/assets/config.js?v=b66d1151"></script>
 <script>
 const PAGE = {source:"Google Ads", sourceShared:"مشاركة من الاختبار"};
 function trackLead(phone){if(window.gtag&&phone)gtag('set','user_data',{phone_number:'+'+phone});if(window.gtag)gtag('event','conversion',{send_to:'AW-10864651559/4ZkxCNvts6AYEKfa1bwo'});}
@@ -219,7 +219,7 @@ function riyadhNow(){const p=new Intl.DateTimeFormat("en-US",{timeZone:"Asia/Riy
 function devOS(){const u=navigator.userAgent||"";if(/iPhone|iPad|iPod/i.test(u)||(/Macintosh/.test(u)&&navigator.maxTouchPoints>1))return " | iOS";if(/Android/i.test(u))return " | Android";return /Windows|Macintosh|Linux|CrOS/.test(u)?" | كمبيوتر":" | غير معروف";}
 function refHost(){try{const h=document.referrer?new URL(document.referrer).hostname:"";return h&&h!==location.hostname?" ← "+h:"";}catch(e){return "";}}
 function contactMessage(){
-  const {day,min}=riyadhNow(), H=(window.IF_CONFIG&&IF_CONFIG.hours)||{open:"14:30",close:"21:30",closedDay:5};
+  const {day,min}=riyadhNow(), H=(window.IF_CONFIG&&IF_CONFIG.hours)||{open:"14:30",close:"21:00",closedDay:5};
   const toMin=s=>{const [h,m]=s.split(":");return h*60+ +m;}; const o=toMin(H.open), c=toMin(H.close);
   const nextDay = ((day+1)%7===H.closedDay) ? "يوم السبت" : "بكرة";
   if(day===H.closedDay) return "اليوم الجمعة إجازة، وبنتواصل معكم يوم السبت من الساعة 2:30 العصر.";
