@@ -95,7 +95,7 @@
 
   <!-- quiz -->
   <section id="quiz" class="hidden">
-    <div class="top"><button class="back" id="back" type="button" aria-label="السؤال السابق"><span class="arr" aria-hidden="true">&#8594;</span> السابق</button><span id="count"></span></div>
+    <div class="top"><button class="back" id="back" type="button" aria-label="السؤال السابق"><span class="arr" aria-hidden="true">&#8594;</span> السابق</button><span class="stage" id="stage"></span><span id="count"></span></div>
     <div class="bar"><div id="prog"></div></div>
     <div id="qbox"></div>
   </section>
@@ -110,7 +110,7 @@
 // ---------- gender (نسخة الأولاد / نسخة البنات) ----------
 // "m" = ولد (النصوص الأصلية)، "f" = بنت (Q_F / TYPES_F / SECOND_F / LABELS_F من quiz-data-f.js).
 // الحساب والنتيجة لا يتغيران بالجنس: نفس المحاور والنقاط، يتغير الكلام والرسمة فقط.
-const LABELS_M={heroWord:"البطل",who:"من هو {n}؟",strengths:"نقاط قوته",work:"الجانب الذي يحتاج اهتمامك",pot:"إذا وُجّه بالشكل الصحيح",steps:"خطوات تساعد {n}",week:"جرّب هذا الأسبوع مع {n}",hideName:"إخفاء اسم البطل في الصورة",resultSmall:"نتيجة اختبار شخصية البطل",hiddenName:"بطلي",discover:"اكتشف شخصية بطلك مجاناً",basis:"بُنيت نتيجة {n} على عمره ({age})، وكونه ولداً، و18 إجابة منك عن مواقف من يومه."};
+const LABELS_M={heroWord:"البطل",who:"من هو {n}؟",strengths:"نقاط قوته",work:"الجانب الذي يحتاج اهتمامك",pot:"إذا وُجّه بالشكل الصحيح",steps:"خطوات تساعد {n}",week:"جرّب هذا الأسبوع مع {n}",hideName:"إخفاء اسم البطل في الصورة",resultSmall:"نتيجة اختبار شخصية البطل",hiddenName:"بطلي",discover:"اكتشف شخصية بطلك مجاناً",basis:"بُنيت نتيجة {n} على عمره ({age})، وكونه ولداً، و18 إجابة منك عن مواقف من يومه.",stage:["من هو {n}؟","ملامح {n} تتضح","اقتربنا من {n}"]};
 // تسمية ملفات الرسومات (متفق عليها مع المصمم): assets/heroes/<نمط>_<boy|girl>_<small|mid|big>.png
 const HERO_FILE={anger:"will",energy:"flame",conf:"observer",bully:"heart",focus:"dreamer",balanced:"balanced"};
 const BAND_FILE={a:"small",b:"mid",c:"big"};
@@ -123,7 +123,7 @@ function setGender(g){
   } else { QD=Q; TD=TYPES; SD=SECOND; LB=LABELS_M; }
 }
 const heroArt=t=>`/assets/heroes/${HERO_FILE[t]||"balanced"}_${gender==="f"?"girl":"boy"}_${BAND_FILE[band]||"mid"}.png`;
-const lbl=k=>LB[k].replaceAll("{n}",name);
+const lbl=k=>Array.isArray(LB[k])?LB[k].map(x=>x.replaceAll("{n}",name)):LB[k].replaceAll("{n}",name);
 // ----------------------------------------------------------
 let name="بطلك", band="a", i=0, ans=new Array(Q.length).fill(null);
 const $=s=>document.querySelector(s);
@@ -187,7 +187,8 @@ $("#back").onclick=()=>{ if(i>0){i--;render();} };
 
 function render(){
   const q=QD[i], opts=pickB(q.o);
-  $("#count").textContent= `أسئلة ${name} · ` + (i<QD.length-1 ? `${i+1} من ${QD.length-1}` : "سؤال أخير");
+  $("#count").textContent= i<QD.length-1 ? `${i+1} من ${QD.length-1}` : "سؤال أخير";
+  $("#stage").textContent=lbl("stage")[i<6?0:i<12?1:2];
   $("#prog").style.width=(i/QD.length*100)+"%";
   $("#back").disabled=i===0;
   $("#qbox").innerHTML=`<div class="fade"><p class="q">${fill(q.t)}</p>${opts.map((o,k)=>`<button class="opt${ans[i]===k?" sel":""}" data-k="${k}">${o[0]}</button>`).join("")}</div>`;
