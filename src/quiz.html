@@ -87,7 +87,7 @@
     <p class="by">من إعداد <strong class="xp">خبراء انفكتوس فايتر</strong></p>
     <div class="card">
       <div class="who" id="gpickWho"></div>
-      <p class="q" style="min-height:auto">الأسئلة مُعدّة لعمر <b id="gpickAge"></b>، وتختلف للولد عن البنت.<br>قبل ما نبدأ:</p>
+      <p class="q" style="min-height:auto">أسئلة مُعدّة خصيصاً لعمر <b id="gpickName"></b>. قبل ما نبدأ:</p>
       <button class="btn" id="goBoy" type="button">بطلي ولد</button>
       <button class="btn" id="goGirl" type="button">بطلتي بنت</button>
     </div>
@@ -168,7 +168,7 @@ async function init(){
 let demoPrefilled=false;
 function startQuiz(){ i=0; ans.fill(null); $("#forWho").textContent=`مخصص ل${name}، ${ageText(ageNum)}`; only("quiz"); render(); }
 const whoChip=()=>`<span class="whoName">${name}</span><span class="whoDot">·</span><span class="whoAge">${ageText(ageNum)}</span>`;
-function showGpick(){ $("#gpickTitle").textContent=`اكتشف شخصية ${name}`; $("#gpickWho").innerHTML=whoChip(); $("#gpickAge").textContent=ageText(ageNum); only("gpick"); }
+function showGpick(){ $("#gpickTitle").textContent=`اكتشف شخصية ${name}`; $("#gpickWho").innerHTML=whoChip(); $("#gpickName").textContent=name; only("gpick"); }
 function showIntroWho(){ $("#introWho").innerHTML=whoChip(); $("#introWho").classList.remove("hidden"); }
 function startFrom(g){
   if(DEMO&&!demoPrefilled&&!$("#demoFields").classList.contains("hidden")){
