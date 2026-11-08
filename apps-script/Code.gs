@@ -50,6 +50,7 @@ function doGet(e) {
 var p = (e && e.parameter) || {};
 try {
 if (p.action === 'lead') return json_(getLead_(p.t));
+if (p.action === 'find') return json_(findLead_(p.p, p.n));
 return json_({ ok: true, service: 'invictus-quiz' });
 } catch (err) {
 return json_({ ok: false, error: String(err) });
@@ -118,6 +119,38 @@ var res = findResult_(token);
 var out = { ok: true, name: firstName_(r[COL.child - 1]), age: parseAge_(r[COL.age - 1]), done: false };
 if (res && res.status === 'مكتمل') { out.done = true; out.result = res.result; }
 return out;
+}
+
+// ---------- find a recent lead by phone + child name (parents coming from Snap/Meta native forms) ----------
+// The platforms cannot pass the form answers in the end-screen link, so the parent types the phone and the
+// child's name; both must match a registration from the last 3 days. Returns only the token.
+function findLead_(phone, child) {
+var ph = normPhone_(phone);
+if (!ph) return { ok: false, error: 'bad_phone' };
+var nm = normName_(child);
+if (nm.length < 2) return { ok: false, error: 'bad_name' };
+var sh = leadsSheet_();
+var last = sh.getLastRow();
+if (last < 2) return { ok: false, error: 'not_found' };
+var start = Math.max(2, last - 499);
+var vals = sh.getRange(start, 1, last - start + 1, COL.token).getValues();
+var cutoff = Date.now() - 3 * 24 * 3600 * 1000;
+for (var i = vals.length - 1; i >= 0; i--) {
+var r = vals[i];
+if (normPhone_(r[COL.phone - 1]) !== ph) continue;
+var d = r[0] instanceof Date ? r[0].getTime() : Date.parse(String(r[0]).trim().replace(' ', 'T') + '+03:00');
+if (d && d < cutoff) continue;
+var rn = normName_(r[COL.child - 1]);
+if (!rn || (rn.indexOf(nm) < 0 && nm.indexOf(rn) < 0)) continue;
+var t = String(r[COL.token - 1]).trim();
+if (!/^[a-f0-9]{12}$/.test(t)) { t = newToken_(); sh.getRange(start + i, COL.token).setValue(t); }
+return { ok: true, t: t };
+}
+return { ok: false, error: 'not_found' };
+}
+function normName_(s) {
+return clean_(s, 60).replace(/[\u064B-\u0652\u0640]/g, '').replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي')
+.replace(/^البطل\s*/, '').replace(/\s+/g, '').replace(/[اه]$/, '').toLowerCase();
 }
 
 // ---------- save quiz (partial or complete) ----------
