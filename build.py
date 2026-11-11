@@ -64,7 +64,7 @@ for folder, cfg in PAGES.items():
             .replace("{{PIXEL_HEAD}}", pixel_head(cfg))
             .replace("{{PIXEL_FNS}}", pixel_fns(cfg))
             .replace("{{STEP1}}", "وصلت لصفحتنا" if folder == "" else "دخلت الإعلان")
-            .replace("{{ROBOTS}}", ROBOTS_INDEX if folder == "" else ROBOTS_NOINDEX))
+            .replace("{{ROBOTS}}", ROBOTS_NOINDEX))  # 2026-11-11: invictus-ksa.info (old page) is the only page meant for Google search
     out_dir = ROOT / folder if folder else ROOT
     out_dir.mkdir(exist_ok=True)
     (out_dir / "index.html").write_text(bust(html), encoding="utf-8")
