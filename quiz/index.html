@@ -39,7 +39,7 @@
   #cardOverlay img{width:100%;height:auto;border-radius:12px;display:block;-webkit-touch-callout:default}
   #cardOverlay p{margin:12px 0 0;font-size:14.5px;color:var(--muted)}
   #cardOverlay .btn{margin-top:10px}
-  #intro>h1,#intro>.lead,#intro,#gpick>h1,#gpick,#noLead,.q,.hero,.note,.actions .toast{text-align:center}
+  #intro>h1,#intro>.lead,#intro,#gpick>h1,#gpick,#noLead,#findLead>h1,#findLead>.lead,#findLead>.by,.q,.hero,.note,.actions .toast{text-align:center}
   #intro .card{text-align:right}
   #intro .card .btn,#gpick .card .btn{margin-top:10px}
   .meta{justify-content:center}
@@ -59,6 +59,21 @@
     <p class="by">من إعداد <strong class="xp">خبراء انفكتوس فايتر</strong></p>
     <p class="lead">الاختبار مجاني ويظهر لك بعد ما تسجّل بيانات بطلك. التسجيل ياخذ أقل من دقيقة.</p>
     <a class="btn" href="/?ref=share">سجّل بطلك وابدأ الاختبار</a>
+  </section>
+
+  <!-- came from a Snap/Meta native form (?f=...): find the registration by phone + child name -->
+  <section id="findLead" class="hidden">
+    <h1>اكتشف شخصية بطلك</h1>
+    <p class="by">من إعداد <strong class="xp">خبراء انفكتوس فايتر</strong></p>
+    <p class="lead">اكتب جوالك واسم بطلك مثل ما سجّلتهم، ونفتح لك اختباره.</p>
+    <div class="card">
+      <label for="fPh" style="margin-top:0">جوال ولي الأمر</label>
+      <input id="fPh" type="tel" inputmode="tel" dir="ltr" placeholder="05xxxxxxxx" autocomplete="tel">
+      <label for="fNm">اسم البطل</label>
+      <input id="fNm" autocomplete="off">
+      <div id="fErr" class="err hidden" role="alert"></div>
+      <button class="btn" id="fGo" type="button">افتح الاختبار</button>
+    </div>
   </section>
 
   <!-- intro -->
@@ -457,7 +472,7 @@ const DEMO=!EP||token==="demo";
 const SHARE_URL=location.origin+"/?ref=share";
 let lastResult=null;
 
-function only(id){["loading","noLead","intro","gpick","quiz","result"].forEach(x=>$("#"+x).classList.toggle("hidden",x!==id));window.scrollTo(0,0);}
+function only(id){["loading","noLead","findLead","intro","gpick","quiz","result"].forEach(x=>$("#"+x).classList.toggle("hidden",x!==id));window.scrollTo(0,0);}
 function setAccent(c,s){document.documentElement.style.setProperty("--accent",c);document.documentElement.style.setProperty("--accent-soft",s);}
 
 async function api(method,payload){
@@ -471,7 +486,7 @@ async function init(){
     if(qn&&qa>=1&&qa<=17){ name=esc(qn); ageNum=qa; band=bandOf(qa); if(GO){ showGpick(); return; } $("#introTitle").textContent=`اكتشف شخصية ${qn}`; demoPrefilled=true; showIntroWho(); only("intro"); return; }
     $("#demoFields").classList.remove("hidden"); only("intro"); return;
   }
-  if(!/^[a-f0-9]{12}$/.test(token)){ only("noLead"); return; }
+  if(!/^[a-f0-9]{12}$/.test(token)){ only(QS.get("f")?"findLead":"noLead"); return; }
   let lead=null;
   for(let a=0;a<2&&!lead;a++){ try{ lead=await api("GET"); }catch(e){ await new Promise(r=>setTimeout(r,900)); } }
   if(!lead||!lead.ok){ only("noLead"); return; }
@@ -482,6 +497,28 @@ async function init(){
   showIntroWho();
   only("intro");
 }
+
+// ---------- parents coming from the Snap/Meta native form (?f=snap|insta) ----------
+// The platform cannot pass the form answers in the link; the lead reaches "مايو" through Zapier
+// (usually within a few minutes), so we look it up by phone + child name and retry while it arrives.
+$("#fGo").onclick=async()=>{
+  const ph=$("#fPh").value.trim(), nm=$("#fNm").value.trim(), err=$("#fErr"), btn=$("#fGo");
+  const d=ph.replace(/[٠-٩]/g,c=>"٠١٢٣٤٥٦٧٨٩".indexOf(c)).replace(/\D/g,"").replace(/^(00966|966|0)/,"");
+  if(!/^5\d{8}$/.test(d)){ err.textContent="اكتب رقم جوال سعودي صحيح، مثل 0551234567"; err.classList.remove("hidden"); return; }
+  if(nm.length<2){ err.textContent="اكتب اسم البطل"; err.classList.remove("hidden"); return; }
+  err.classList.add("hidden"); btn.disabled=true; btn.textContent="ثواني ونجهّز اختبار بطلك...";
+  for(let a=0;a<12;a++){
+    try{
+      const r=await (await fetch(EP+"?action=find&p="+encodeURIComponent(d)+"&n="+encodeURIComponent(nm))).json();
+      if(r&&r.ok&&/^[a-f0-9]{12}$/.test(r.t)){ location.replace("/quiz/?t="+r.t+"&go=1"); return; }
+      if(r&&r.error&&r.error!=="not_found") break;
+    }catch(e){}
+    await new Promise(res=>setTimeout(res,10000));
+  }
+  btn.disabled=false; btn.textContent="حاول مرة ثانية";
+  err.textContent="ما لقينا التسجيل للحين. تأكد من الرقم والاسم، أو انتظر رابط الاختبار في رسالة تأكيد الحجز.";
+  err.classList.remove("hidden");
+};
 
 let demoPrefilled=false;
 function startQuiz(){ i=0; ans.fill(null); only("quiz"); render(); }

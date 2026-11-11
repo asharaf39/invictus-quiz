@@ -50,6 +50,7 @@ function doGet(e) {
 var p = (e && e.parameter) || {};
 try {
 if (p.action === 'lead') return json_(getLead_(p.t));
+if (p.action === 'find') return json_(findLead_(p.p, p.n));
 return json_({ ok: true, service: 'invictus-quiz' });
 } catch (err) {
 return json_({ ok: false, error: String(err) });
@@ -120,6 +121,38 @@ if (res && res.status === 'مكتمل') { out.done = true; out.result = res.resu
 return out;
 }
 
+// ---------- find a recent lead by phone + child name (parents coming from Snap/Meta native forms) ----------
+// The platforms cannot pass the form answers in the end-screen link, so the parent types the phone and the
+// child's name; both must match a registration from the last 3 days. Returns only the token.
+function findLead_(phone, child) {
+var ph = normPhone_(phone);
+if (!ph) return { ok: false, error: 'bad_phone' };
+var nm = normName_(child);
+if (nm.length < 2) return { ok: false, error: 'bad_name' };
+var sh = leadsSheet_();
+var last = sh.getLastRow();
+if (last < 2) return { ok: false, error: 'not_found' };
+var start = Math.max(2, last - 499);
+var vals = sh.getRange(start, 1, last - start + 1, COL.token).getValues();
+var cutoff = Date.now() - 3 * 24 * 3600 * 1000;
+for (var i = vals.length - 1; i >= 0; i--) {
+var r = vals[i];
+if (normPhone_(r[COL.phone - 1]) !== ph) continue;
+var d = r[0] instanceof Date ? r[0].getTime() : Date.parse(String(r[0]).trim().replace(' ', 'T') + '+03:00');
+if (d && d < cutoff) continue;
+var rn = normName_(r[COL.child - 1]);
+if (!rn || (rn.indexOf(nm) < 0 && nm.indexOf(rn) < 0)) continue;
+var t = String(r[COL.token - 1]).trim();
+if (!/^[a-f0-9]{12}$/.test(t)) { t = newToken_(); sh.getRange(start + i, COL.token).setValue(t); }
+return { ok: true, t: t };
+}
+return { ok: false, error: 'not_found' };
+}
+function normName_(s) {
+return clean_(s, 60).replace(/[\u064B-\u0652\u0640]/g, '').replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي')
+.replace(/^البطل\s*/, '').replace(/\s+/g, '').replace(/[اه]$/, '').toLowerCase();
+}
+
 // ---------- save quiz (partial or complete) ----------
 function saveQuiz_(b) {
 var token = String(b.t || '').trim();
@@ -139,13 +172,14 @@ if (existing && existing.status === 'مكتمل') return { ok: true, done: true,
 var now = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd H:mm:ss');
 var result = {
 name: firstName_(lead[COL.child - 1]), age: parseAge_(lead[COL.age - 1]), type: String(b.type || ''),
-top: String(b.top || ''), second: String(b.second || ''), scores: scores, sport: clean_(b.sport, 40)
+top: String(b.top || ''), second: String(b.second || ''), scores: scores, sport: clean_(b.sport, 40),
+g: b.g === 'f' ? 'f' : 'm' // gender of the quiz version (girls' wording); old results without g read as boys
 };
 var row = [
 token, existing ? existing.created : now, now, done ? 'مكتمل' : 'جزئي', result.name, result.age,
 lead[COL.branch - 1], lead[COL.source - 1], done ? typeLabel_(result.type) : '', done ? axisLabel_(result.top) : '',
 done ? scores[result.top] || '' : '', scores.conf, scores.anger, scores.bully, scores.screen, scores.energy, scores.focus,
-result.sport, scores.bully >= 5 ? 'نعم' : '', QUIZ_URL + token, JSON.stringify({ answers: b.answers || [], result: result })
+sportForCrm_(result.sport), scores.bully >= 5 ? 'نعم' : '', QUIZ_URL + token, JSON.stringify({ answers: b.answers || [], result: result })
 ];
 if (existing) sh.getRange(existing.row, 1, 1, row.length).setValues([row]);
 else sh.appendRow(row);
@@ -216,6 +250,11 @@ var w = clean_(s, 40).split(' ');
 // keep compound first names together: عبد الله، عبد الرحمن، أبو بكر
 if (w.length > 1 && /^(عبد|أبو|ابو)$/.test(w[0])) return w[0] + ' ' + w[1];
 return w[0] || '';
+}
+// The CRMs read the prior-sport column with the boys' wording; girls' answers are stored in that same wording.
+function sportForCrm_(s) {
+var map = { 'لا، لم تمارس من قبل': 'لا، لم يمارس من قبل', 'نعم، ولا تزال تمارسها': 'نعم، ولا يزال يمارسها', 'نعم، لكنها توقفت': 'نعم، لكنه توقف' };
+return map[s] || s;
 }
 function typeLabel_(k) {
 return { anger: 'صاحب الإرادة', energy: 'الشعلة', conf: 'المراقب الذكي', bully: 'صاحب القلب الطيب', focus: 'الحالم المبدع', balanced: 'المتوازن' }[k] || k;
