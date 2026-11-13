@@ -13,6 +13,10 @@
   .meta{display:flex;gap:16px;color:var(--muted);font-size:13px;margin-top:14px}
   .q{font-size:20px;font-weight:600;line-height:1.6;margin:0 0 20px;min-height:64px}
   .hero{border-radius:20px;padding:26px 22px;color:#fff;background:var(--accent);margin-bottom:18px;position:relative;overflow:hidden}
+  .herowrap{position:relative;padding-top:150px}
+  .herowrap .heroart{position:absolute;top:0;left:50%;transform:translateX(-50%);height:260px;z-index:2;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25))}
+  .herowrap .hero{padding-top:120px}
+  .herowrap.noart{padding-top:0} .herowrap.noart .hero{padding-top:26px}
   .hero:after{content:"";position:absolute;inset:auto -40px -60px auto;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.12)}
   .hero small{display:block;opacity:.85;font-size:13px;margin-bottom:6px}
   .hero h1{color:#fff;font-size:27px;margin:0 0 8px}
@@ -126,7 +130,7 @@
 // "m" = ولد (النصوص الأصلية)، "f" = بنت (Q_F / TYPES_F / SECOND_F / LABELS_F من quiz-data-f.js).
 // الحساب والنتيجة لا يتغيران بالجنس: نفس المحاور والنقاط، يتغير الكلام والرسمة فقط.
 const LABELS_M={heroWord:"البطل",who:"من هو {n}؟",strengths:"نقاط قوته",work:"الجانب الذي يحتاج اهتمامك",pot:"إذا وُجّه بالشكل الصحيح",steps:"خطوات تساعد {n}",week:"جرّب هذا الأسبوع مع {n}",hideName:"إخفاء اسم البطل في الصورة",resultSmall:"نتيجة اختبار شخصية البطل",hiddenName:"بطلي",discover:"اكتشف شخصية بطلك مجاناً",basis:"بُنيت نتيجة {n} على عمره ({age})، وكونه ولداً، و18 إجابة منك عن مواقف من يومه.",stage:["من هو {n}؟","ملامح {n} تتضح","اقتربنا من {n}"]};
-// تسمية ملفات الرسومات (متفق عليها مع المصمم): assets/heroes/<نمط>_<boy|girl>_<small|mid|big>.png
+// تسمية ملفات الرسومات: assets/heroes/<نمط>_<boy|girl>_<small|mid|big>.webp
 const HERO_FILE={anger:"will",energy:"flame",conf:"observer",bully:"heart",focus:"dreamer",balanced:"balanced"};
 const BAND_FILE={a:"small",b:"mid",c:"big"};
 let gender="m", QD=Q, TD=TYPES, SD=SECOND, LB=LABELS_M;
@@ -137,7 +141,10 @@ function setGender(g){
     TD={}; for(const k in TYPES) TD[k]=Object.assign({},TYPES[k],TYPES_F[k]); // الألوان من النسخة الأصلية دائماً
   } else { QD=Q; TD=TYPES; SD=SECOND; LB=LABELS_M; }
 }
-const heroArt=t=>`/assets/heroes/${HERO_FILE[t]||"balanced"}_${gender==="f"?"girl":"boy"}_${BAND_FILE[band]||"mid"}.png`;
+const HERO_V="1"; // غيّر الرقم عند استبدال أي رسمة (الـ CDN يحتفظ بملفات /assets أسبوعاً)
+const heroArt=t=>`/assets/heroes/${HERO_FILE[t]||"balanced"}_${gender==="f"?"girl":"boy"}_${BAND_FILE[band]||"mid"}.webp?v=${HERO_V}`;
+// تحميل رسومات الأنماط الستة (لنفس الجنس والفئة العمرية) في الخلفية أثناء الإجابة، حتى تظهر رسمة النتيجة فوراً
+function preloadHeroes(){ try{ Object.keys(HERO_FILE).forEach(t=>{ const im=new Image(); im.src=heroArt(t); }); }catch(e){} }
 const lbl=k=>Array.isArray(LB[k])?LB[k].map(x=>x.replaceAll("{n}",name)):LB[k].replaceAll("{n}",name);
 // ----------------------------------------------------------
 let name="بطلك", band="a", i=0, ans=new Array(Q.length).fill(null);
@@ -203,7 +210,7 @@ $("#fGo").onclick=async()=>{
 };
 
 let demoPrefilled=false;
-function startQuiz(){ i=0; ans.fill(null); only("quiz"); render(); }
+function startQuiz(){ i=0; ans.fill(null); only("quiz"); render(); preloadHeroes(); }
 const whoChip=()=>`<span class="whoName">${name}</span><span class="whoDot">·</span><span class="whoAge">${ageText(ageNum)}</span>`;
 function showGpick(){ $("#gpickTitle").textContent=`اكتشف شخصية ${name}`; $("#gpickWho").innerHTML=whoChip(); $("#gpickName").textContent=name; only("gpick"); }
 function showIntroWho(){ $("#introWho").innerHTML=whoChip(); $("#introWho").classList.remove("hidden"); }
@@ -280,7 +287,7 @@ function renderResult(r){
      ${Object.keys(AX).map(k=>`<div class="row"><span>${AX[k]}</span><span>${s[k]} من 6 · ${level(s[k])}</span></div>`).join("")}
    </div>` : "";
   $("#result").innerHTML=`
-   <div class="hero fade"><small>${LB.resultSmall}، من <strong class="xp">خبراء انفكتوس فايتر</strong></small><img src="${heroArt(r.type)}" alt="" style="display:block;margin:4px auto 10px;height:110px" onerror="this.remove()"><h1>${name}: ${LB.heroWord} ${T.name}</h1><p>${T.tag}</p><p class="basis">${fill(LB.basis)}</p></div>
+   <div class="herowrap fade"><img class="heroart" src="${heroArt(r.type)}" alt="" onerror="this.parentNode.classList.add('noart');this.remove()"><div class="hero"><small>${LB.resultSmall}، من <strong class="xp">خبراء انفكتوس فايتر</strong></small><h1>${name}: ${LB.heroWord} ${T.name}</h1><p>${T.tag}</p><p class="basis">${fill(LB.basis)}</p></div></div>
    <div class="sec"><h2>${lbl("who")}</h2><p>${fill(T.who)}</p></div>
    <div class="sec"><h2>${LB.strengths}</h2><ul>${T.str.map(x=>`<li>${x}</li>`).join("")}</ul></div>
    <div class="sec"><h2>${LB.work}</h2><p>${fill(T.work)}</p></div>
@@ -319,7 +326,7 @@ function wrapLines(ctx,text,maxW){ const words=text.split(" "),lines=[]; let lin
   if(line) lines.push(line); return lines; }
 function loadImg(src){ return new Promise(res=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src; }); }
 async function makeCard(hide){
-  // رسمة الشخصية داخل صورة المشاركة: تُضاف في مرحلة التصميم بعد استلام رسومات المصمم (تخطيط الصورة سيتغير معها).
+  // رسمة الشخصية فوق الاسم داخل اللوحة الملونة (لو الرسمة ما حمّلت تبقى مساحتها فاضية).
   const r=lastResult, T=TD[r.type]||TD.balanced, W=1080,H=1350;
   const c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
   try{ await document.fonts.load('700 80px "IBM Plex Sans Arabic"'); await document.fonts.load('400 40px "IBM Plex Sans Arabic"'); }catch(e){}
@@ -327,26 +334,27 @@ async function makeCard(hide){
   x.fillStyle="#faf9f7"; x.fillRect(0,0,W,H);
   // colored panel
   const g=x.createLinearGradient(0,0,W,760); g.addColorStop(0,T.color); g.addColorStop(1,shade(T.color,-28));
-  x.fillStyle=g; roundRect(x,60,60,W-120,820,48); x.fill();
-  x.fillStyle="rgba(255,255,255,.12)"; x.beginPath(); x.arc(170,820,230,0,Math.PI*2); x.fill();
+  x.fillStyle=g; roundRect(x,60,60,W-120,940,48); x.fill();
+  x.fillStyle="rgba(255,255,255,.12)"; x.beginPath(); x.arc(170,940,230,0,Math.PI*2); x.fill();
   x.direction="rtl"; x.textAlign="center"; x.fillStyle="#fff";
-  x.font=F(500,36); x.globalAlpha=.9; x.fillText(LB.resultSmall,W/2,170); x.globalAlpha=1;
-  x.font=F(700,38); x.fillText("من خبراء انفكتوس فايتر",W/2,225);
+  x.font=F(500,36); x.globalAlpha=.9; x.fillText(LB.resultSmall,W/2,140); x.globalAlpha=1;
+  x.font=F(700,38); x.fillText("من خبراء انفكتوس فايتر",W/2,190);
+  const hi=await loadImg(heroArt(r.type)); if(hi){ const hh=400, hw=hi.width*hh/hi.height; x.drawImage(hi,W/2-hw/2,215,hw,hh); }
   const nm = hide ? "" : r.name;
-  x.font=F(700,nm?92:104);
+  x.font=F(700,nm?80:90);
   const title = nm ? `${nm}` : LB.hiddenName;
-  x.fillText(title,W/2,nm?390:430);
-  x.font=F(700,nm?84:96); x.fillText(`${LB.heroWord} ${T.name}`,W/2,nm?500:560);
-  x.font=F(400,42); wrapLines(x,T.tag,W-260).forEach((l,k)=>x.fillText(l,W/2,(nm?620:690)+k*62));
+  x.fillText(title,W/2,nm?705:735);
+  x.font=F(700,nm?70:80); x.fillText(`${LB.heroWord} ${T.name}`,W/2,nm?800:840);
+  x.font=F(400,38); wrapLines(x,T.tag,W-260).forEach((l,k)=>x.fillText(l,W/2,(nm?880:915)+k*52));
   // footer
   const logo=await loadImg("/assets/emblem.png");
   x.fillStyle="#C8102E"; x.font=F(700,60);
   const label="انفكتوس فايتر", tw=x.measureText(label).width;
   if(logo){ const h=86,w=logo.width*h/logo.height, gap=22, total=w+gap+tw, left=W/2-total/2;
-    x.textAlign="right"; x.fillText(label,left+tw,1065); x.drawImage(logo,left+tw+gap,1003,w,h); x.textAlign="center"; }
-  else x.fillText(label,W/2,1065);
-  x.fillStyle="#1d1d1f"; x.font=F(600,40); x.fillText(LB.discover,W/2,1180);
-  x.fillStyle="#6b6b70"; x.font=F(400,36); x.direction="ltr"; x.fillText("join.invictus-ksa.info",W/2,1245);
+    x.textAlign="right"; x.fillText(label,left+tw,1100); x.drawImage(logo,left+tw+gap,1040,w,h); x.textAlign="center"; }
+  else x.fillText(label,W/2,1100);
+  x.fillStyle="#1d1d1f"; x.font=F(600,40); x.fillText(LB.discover,W/2,1215);
+  x.fillStyle="#6b6b70"; x.font=F(400,36); x.direction="ltr"; x.fillText("join.invictus-ksa.info",W/2,1275);
   return new Promise(res=>c.toBlob(res,"image/png"));
 }
 function roundRect(x,a,b,w,h,r){ x.beginPath(); x.moveTo(a+r,b); x.arcTo(a+w,b,a+w,b+h,r); x.arcTo(a+w,b+h,a,b+h,r); x.arcTo(a,b+h,a,b,r); x.arcTo(a,b,a+w,b,r); x.closePath(); }
