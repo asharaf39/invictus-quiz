@@ -147,7 +147,7 @@
 <script>
 const PAGE = {source:"Google Ads", sourceShared:"مشاركة من الاختبار"};
 function trackLead(phone){if(window.gtag&&phone)gtag('set','user_data',{phone_number:'+'+phone});if(window.gtag)gtag('event','conversion',{send_to:'AW-10864651559/4ZkxCNvts6AYEKfa1bwo'});}
-const BRANCHES=[["حي الوادي","حي الوادي"],["حي الياسمين","حي الياسمين"],["حي القيروان","حي القيروان"],["حي الحمراء (قريباً)","",true]];
+const BRANCHES=[["حي الوادي","حي الوادي",false,"طريق عثمان بن عفان، قرب الدائري الشمالي"],["حي الياسمين","حي الياسمين",false,"شارع الفجر، شمال الرياض"],["حي القيروان","حي القيروان",false,"طريق الأمير محمد بن سعد، شمال غرب الرياض"],["حي الحمراء (قريباً)","",true,"طريق الإمام عبدالله بن سعود، شرق الرياض"]];
 const GOALS=[ // [label, description, value stored in sheet]
  ["بناء الشخصية","خجول / انطوائي","بناء شخصية"],
  ["تفريغ طاقة وترفيه","طاقته زايدة / مشاغب","تفريغ طاقة و ترفيه"],
@@ -190,7 +190,7 @@ const idx=n=>slides.findIndex(s=>s.dataset.s===n);
 const go=n=>show(idx(n));
 
 // options
-$("#branches").innerHTML=BRANCHES.map(([l,v,off])=>`<button type="button" class="opt" data-v="${v}"${off?" disabled":""}>${l}</button>`).join("");
+$("#branches").innerHTML=BRANCHES.map(([l,v,off,d])=>`<button type="button" class="opt" data-v="${v}"${off?" disabled":""}>${l}${d?`<small>${d}</small>`:""}</button>`).join("");
 $("#goals").innerHTML=GOALS.map(([l,d,v])=>`<button type="button" class="opt" data-v="${v}">${l}<small>${d}</small></button>`).join("");
 document.querySelectorAll("#branches .opt:not([disabled])").forEach(b=>b.onclick=()=>{
   document.querySelectorAll("#branches .opt").forEach(x=>x.classList.remove("sel")); b.classList.add("sel");
