@@ -53,7 +53,7 @@
 <div class="wrap">
   <div class="brand" id="brand"><img src="/assets/emblem.png?v=ccf49ac8" alt="">انفكتوس فايتر</div>
 
-  <div class="offer" id="offer"><b>عرض الجمعة البيضاء: خصم 20% والبدلة علينا</b>سجّل الآن، العرض حتى 25 نوفمبر</div>
+  <div class="offer" id="offer"><b id="offerT"></b><span id="offerS"></span></div>
 
   <div class="top hidden" id="topbar"><button class="back" id="back" type="button">السابق</button><span id="count"></span></div>
   <div class="bar hidden" id="barwrap"><div id="prog"></div></div>
@@ -164,9 +164,13 @@ const qs=new URLSearchParams(location.search);
 const shared = qs.get("ref")==="share";
 let cur=0, sending=false;
 
-// White Friday banner: only for visitors from the white-friday ad sets, until 25 Nov 2026 23:59 Riyadh.
-const OFFER={campaignPrefix:"white-friday", until:Date.parse("2026-11-25T23:59:59+03:00")};
-if((qs.get("utm_campaign")||"").startsWith(OFFER.campaignPrefix) && Date.now()<=OFFER.until) $("#offer").classList.add("on");
+// Offer banners: shown only to visitors whose utm_campaign starts with the prefix, until the end time (Riyadh).
+const OFFERS=[
+  {prefix:"white-friday", until:Date.parse("2026-11-30T23:59:59+03:00"), t:"عرض الجمعة البيضاء: خصم 20% والبدلة علينا", s:"سجّل الآن، العرض حتى 30 نوفمبر"},
+  {prefix:"year-end", until:Date.parse("2026-12-31T23:59:59+03:00"), t:"عرض نهاية السنة: اشترك 3 شهور بـ 1566 ريال", s:"بدل ما تشترك شهر بـ 966 ريال. احجز حصة تجربة لطفلك الآن"}
+];
+{const camp=qs.get("utm_campaign")||"", o=OFFERS.find(x=>camp.startsWith(x.prefix) && Date.now()<=x.until);
+ if(o){$("#offerT").textContent=o.t; $("#offerS").textContent=o.s; $("#offer").classList.add("on");}}
 
 const digits=s=>String(s||"").replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d));
 function parseAge(v){const m=digits(v).replace(/[٫،,]/g,".").match(/\d+(\.\d+)?/);const n=m?Math.floor(parseFloat(m[0])):0;return n>=1&&n<=17?n:0;}
